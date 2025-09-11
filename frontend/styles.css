@@ -1,159 +1,81 @@
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
+/* Fondo degradado */
 body {
-    font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #cddbff 0%, #86e1d9 100%);
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to right, #c2cfff, #d6fff8);
 }
 
+/* Contenedor central */
 .container {
-    background: white;
-    padding: 40px;
-    border-radius: 15px;
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
+/* Caja blanca del formulario */
+.form-box {
+  background: white;
+  padding: 30px 40px;
+  border-radius: 5px;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+  text-align: center;
+  width: 350px;
+}
+
+/* Logo */
 .logo {
-    color: #000000;
-    margin-bottom: 30px;
-    font-size: 28px;
-    font-weight: bold;
+  width: 120px;
+  margin-bottom: 10px;
 }
 
-.form-group {
-    margin-bottom: 20px;
-    text-align: left;
+/* Título */
+.form-box h2 {
+  margin-bottom: 20px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
 }
 
-label {
-    display: block;
-    margin-bottom: 5px;
-    color: #333;
-    font-weight: 500;
+/* Etiquetas */
+form label {
+  display: block;
+  text-align: left;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
 }
 
-input, select {
-    width: 100%;
-    padding: 12px;
-    border: 2px solid #e1e1e1;
-    border-radius: 8px;
-    font-size: 16px;
-    transition: border-color 0.3s;
+/* Inputs */
+form input, 
+form select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border: 1px solid #333;
+  border-radius: 3px;
+  font-size: 14px;
 }
 
-input:focus, select:focus {
-    outline: none;
-    border-color: #667eea;
+/* Botón */
+form button {
+  width: 100%;
+  background: #1a1aff;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: 0.3s ease;
 }
 
-.btn {
-    width: 100%;
-    padding: 12px;
-    background: linear-gradient(135deg, #2c28f8 100%);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(123, 218, 255, 0.3);
-}
-
-.btn:active {
-    transform: translateY(0);
-}
-
-.link {
-    display: block;
-    margin-top: 20px;
-    color: #667eea;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.link:hover {
-    color: #4cc3e0;
-}
-
-.error {
-    color: #e74c3c;
-    background: #fdf2f2;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    border-left: 4px solid #e74c3c;
-}
-
-.success {
-    color: #27ae60;
-    background: #f2fdf2;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 15px;
-    border-left: 4px solid #27ae60;
-}
-
-.dashboard {
-    text-align: center;
-    padding: 40px;
-}
-
-.welcome {
-    color: #333;
-    margin-bottom: 30px;
-    font-size: 24px;
-}
-
-.role-badge {
-    display: inline-block;
-    padding: 5px 15px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    margin-bottom: 20px;
-}
-
-.admin-badge {
-    background: #e74c3c;
-    color: white;
-}
-
-.medico-badge {
-    background: #27ae60;
-    color: white;
-}
-
-.paciente-badge {
-    background: #3498db;
-    color: white;
-}
-.logout-btn {
-    background: #e74c3c;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 600;
-    transition: background 0.3s;
-}
-
-.logout-btn:hover {
-    background: #c0392b;
+form button:hover {
+  background: #0000cc;
 }
