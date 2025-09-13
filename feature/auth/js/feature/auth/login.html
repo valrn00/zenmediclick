@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZenMediClick - Acceso Seguro</title>
+    <link rel="stylesheet" href="../shared/css/auth-styles.css">
+</head>
+<body>
+    <!-- Indicador de tipo de usuario -->
+    <div id="userTypeIndicator" class="user-type-indicator type-paciente">
+        👤 Acceso como Paciente
+    </div>
+
+    <div class="auth-container">
+        <!-- Lado izquierdo - Información -->
+        <div class="auth-left">
+            <h1>🏥 ZenMediClick</h1>
+            <p>Plataforma médica segura y confiable</p>
+            
+            <ul class="features">
+                <li>🔐 <span>Autenticación segura multi-factor</span></li>
+                <li>📋 <span>Gestión completa de citas médicas</span></li>
+                <li>👨‍⚕️ <span>Panel médico profesional</span></li>
+                <li>⚙️ <span>Administración avanzada</span></li>
+                <li>🛡️ <span>Cumplimiento HIPAA y GDPR</span></li>
+            </ul>
+        </div>
+
+        <!-- Lado derecho - Formulario de acceso -->
+        <div class="auth-right">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #333;">🔐 Acceso Seguro</h2>
+
+            <!-- Mensajes -->
+            <div id="errorMessage" class="error-message"></div>
+            <div id="successMessage" class="success-message"></div>
+            <div id="redirectInfo" class="redirect-info">
+                <h3>✅ Autenticación exitosa</h3>
+                <p>Redirigiendo a tu panel personalizado...</p>
+                <div class="progress-bar">
+                    <div id="progressFill" class="progress-fill"></div>
+                </div>
+                <p id="redirectTarget">Preparando acceso...</p>
+            </div>
+
+            <!-- Formulario de Login -->
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>Tipo de Usuario</label>
+                    <select id="userType" onchange="AuthController.updateUserTypeIndicator()">
+                        <option value="paciente">👤 Paciente</option>
+                        <option value="medico">👨‍⚕️ Médico</option>
+                        <option value="admin">⚙️ Administrador</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="tu-email@ejemplo.com" required autocomplete="email">
+                </div>
+
+                <div class="form-group">
+                    <label>Contraseña</label>
+                    <input type="password" id="password" placeholder="Tu contraseña segura" required autocomplete="current-password">
+                </div>
+
+                <div class="security-notice">
+                    <strong>🔒 Sesión segura:</strong> Tu información está protegida con cifrado de extremo a extremo y autenticación de doble factor.
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="loginBtn">
+                    <span id="loginText">Iniciar Sesión Segura</span>
+                    <div class="loading-spinner" id="loginSpinner"></div>
+                </button>
+            </form>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="password-recovery.html" style="color: #4facfe; text-decoration: none; margin-right: 20px;">
+                    🔑 ¿Olvidaste tu contraseña?
+                </a>
+                <a href="register.html" style="color: #4facfe; text-decoration: none;">
+                    📝 Registrarse como paciente
+                </a>
+            </div>
+
+            <!-- Acceso demo -->
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e1e5e9; text-align: center;">
+                <p style="color: #666; margin-bottom: 15px;">🚀 Acceso de demostración:</p>
+                <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
+                    <button onclick="AuthController.demoLogin('paciente')" class="demo-btn">👤 Demo Paciente</button>
+                    <button onclick="AuthController.demoLogin('medico')" class="demo-btn">👨‍⚕️ Demo Médico</button>
+                    <button onclick="AuthController.demoLogin('admin')" class="demo-btn">⚙️ Demo Admin</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/session-manager.js"></script>
+    <script src="js/auth-controller.js"></script>
+    <script src="js/auth-router.js"></script>
+    
+    <script>
+        // Inicializar la página de login
+        document.addEventListener('DOMContentLoaded', function() {
+            // Configurar formulario
+            document.getElementById('loginForm').addEventListener('submit', AuthController.handleLogin);
+            
+            // Verificar si hay sesión activa
+            AuthRouter.checkActiveSession();
+        });
+    </script>
+</body>
+</html>
