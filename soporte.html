@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Soporte - ZenMediClick</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        /* Estilos específicos para soporte */
+        .soporte-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .soporte-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .soporte-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .ticket-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .ticket-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .ticket-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .ticket-id {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .ticket-estado {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .estado-abierto {
+            background: #e3f2fd;
+            color: #1976d2;
+        }
+        
+        .estado-en_proceso {
+            background: #fff3e0;
+            color: #f57c00;
+        }
+        
+        .estado-cerrado {
+            background: #e8f5e8;
+            color: #388e3c;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #666;
+            font-style: italic;
+            padding: 40px;
+        }
+        
+        @media (max-width: 768px) {
+            .soporte-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .soporte-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="soporte-container">
+        <header class="page-header">
+            <a href="paciente/index.html" class="back-button">← Volver al Dashboard</a>
+            <div class="logo">
+                <div class="lotus-logo">🪷</div>
+                <h1>Centro de Soporte - ZenMediClick</h1>
+            </div>
+        </header>
+        
+        <div class="soporte-grid">
+            <!-- Crear nuevo ticket -->
+            <div class="soporte-card">
+                <h2>📝 Crear Nuevo Ticket</h2>
+                <p>¿Tienes algún problema o consulta? Crea un ticket y nuestro equipo te ayudará.</p>
+                
+                <form id="soporteForm">
+                    <div class="form-group">
+                        <label for="asunto">Asunto del problema:</label>
+                        <select id="asunto" name="asunto" required>
+                            <option value="">Seleccionar tipo de problema</option>
+                            <option value="Problema técnico">Problema técnico</option>
+                            <option value="Error en cita">Error en cita</option>
+                            <option value="Problema de acceso">Problema de acceso</option>
+                            <option value="Consulta general">Consulta general</option>
+                            <option value="Sugerencia">Sugerencia</option>
+                            <option value="Otro">Otro</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="mensaje">Describe tu problema:</label>
+                        <textarea id="mensaje" name="mensaje" rows="5" required
+                                  placeholder="Describe detalladamente tu problema o consulta. Incluye cualquier mensaje de error que hayas visto y los pasos que realizaste..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">
+                        <span id="submitText">📤 Enviar Ticket</span>
+                        <span id="submitLoading" class="loading" style="display: none;"></span>
+                    </button>
+                </form>
+            </div>
+            
+            <!-- Mis tickets -->
+            <div class="soporte-card">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2>📋 Mis Tickets</h2>
+                    <button onclick="cargarMisTickets()" class="btn-secondary">🔄 Actualizar</button>
+                </div>
+                
+                <div id="ticketsContainer">
+                    <div class="empty-state">
+                        <p>Cargando tickets...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Información adicional -->
+        <div class="soporte-card" style="margin-top: 20px;">
+            <h3>💡 Consejos para crear un buen ticket</h3>
+            <ul style="color: #666; line-height: 1.8;">
+                <li><strong>Sé específico:</strong> Describe exactamente lo que estaba haciendo cuando ocurrió el problema.</li>
+                <li><strong>Incluye detalles:</strong> Menciona cualquier mensaje de error que hayas visto.</li>
+                <li><strong>Pasos para reproducir:</strong> Si puedes repetir el problema, describe los pasos.</li>
+                <li><strong>Información del navegador:</strong> Si es un problema web, menciona qué navegador usas.</li>
+                <li><strong>Capturas de pantalla:</strong> Si es posible, adjunta imágenes del problema.</li>
+            </ul>
+        </div>
+    </div>
+    
+    <!-- Modal para ver detalles del ticket -->
+    <div id="ticketModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>🎫 Ticket #<span id="ticketId"></span></h2>
+                <span class="close" onclick="cerrarModal()">&times;</span>
+            </div>
+            <div id="ticketDetalles"></div>
+        </div>
+    </div>
+    
+    <!-- Mensajes de notificación -->
+    <div id="message" class="message"></div>
+    
+    <script src="js/scripts.js"></script>
+    <script>
+        // Configuración específica de soporte
+        let ticketsActuales = [];
+        
+        // Verificar autenticación al cargar
+        checkAuth();
+        cargarMisTickets();
+        
+        // Manejar envío de formulario
+        document.getElementById('soporteForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            await crearTicket(e);
+        });
+        
+        // Funciones específicas de soporte
+        async function crearTicket(e) {
+            const submitButton = e.target.querySelector('button[type="submit"]');
+            const submitText = document.getElementById('submitText');
+            const submitLoading = document.getElementById('submitLoading');
+            
+            // Mostrar loading
+            submitButton.disabled = true;
+            submitText.style.display = 'none';
+            submitLoading.style.display = 'inline-block';
+            
+            const formData = new FormData(e.target);
+            const data = {
+                asunto: formData.get('asunto'),
+                mensaje: formData.get('mensaje')
+            };
+            
+            try {
+                const response = await fetch(`${API_BASE}/soporte/crear-ticket`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(data)
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showMessage('✅ Ticket creado exitosamente. Te contactaremos pronto.', 'success');
+                    e.target.reset();
+                    cargarMisTickets(); // Recargar la lista
+                } else {
+                    showMessage(`❌ ${result.message || 'Error creando ticket'}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('❌ Error de conexión. Intenta nuevamente.', 'error');
+            } finally {
+                // Ocultar loading
+                submitButton.disabled = false;
+                submitText.style.display = 'inline';
+                submitLoading.style.display = 'none';
+            }
+        }
+        
+        async function cargarMisTickets() {
+            const container = document.getElementById('ticketsContainer');
+            container.innerHTML = '<div class="empty-state"><p>Cargando tickets...</p></div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/soporte/mis-tickets`, {
+                    credentials: 'include'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    ticketsActuales = result.tickets;
+                    mostrarTickets(result.tickets);
+                } else {
+                    container.innerHTML = `<div class="empty-state"><p>❌ ${result.message || 'Error cargando tickets'}</p></div>`;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                container.innerHTML = '<div class="empty-state"><p>❌ Error de conexión</p></div>';
+            }
+        }
+        
+        function mostrarTickets(tickets) {
+            const container = document.getElementById('ticketsContainer');
+            
+            if (tickets.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <p>📝 No tienes tickets creados aún.</p>
+                        <p style="font-size: 14px;">Crea tu primer ticket si necesitas ayuda.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = tickets.map(ticket => {
+                const fechaCorta = new Date(ticket.fecha_creacion).toLocaleDateString('es-ES');
+                const estadoClass = `estado-${ticket.estado}`;
+                const estadoTexto = {
+                    'abierto': 'Abierto',
+                    'en_proceso': 'En Proceso',
+                    'cerrado': 'Resuelto'
+                }[ticket.estado] || ticket.estado;
+                
+                return `
+                    <div class="ticket-item" onclick="verDetallesTicket(${ticket.id})">
+                        <div class="ticket-header">
+                            <span class="ticket-id">#${ticket.id}</span>
+                            <span class="ticket-estado ${estadoClass}">${estadoTexto}</span>
+                        </div>
+                        <div style="font-weight: bold; margin-bottom: 5px;">${ticket.asunto}</div>
+                        <div style="font-size: 14px; color: #666; margin-bottom: 5px;">
+                            ${ticket.mensaje.length > 100 ? ticket.mensaje.substring(0, 100) + '...' : ticket.mensaje}
+                        </div>
+                        <div style="font-size: 12px; color: #999;">Creado: ${fechaCorta}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        async function verDetallesTicket(ticketId) {
+            try {
+                const response = await fetch(`${API_BASE}/soporte/ticket/${ticketId}`, {
+                    credentials: 'include'
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    mostrarModalTicket(result.ticket);
+                } else {
+                    showMessage(`❌ ${result.message || 'Error cargando detalles'}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showMessage('❌ Error de conexión', 'error');
+            }
+        }
+        
+        function mostrarModalTicket(ticket) {
+            const estadoTexto = {
+                'abierto': 'Abierto',
+                'en_proceso': 'En Proceso',
+                'cerrado': 'Resuelto'
+            }[ticket.estado] || ticket.estado;
+            
+            const fechaCreacion = new Date(ticket.fecha_creacion).toLocaleString('es-ES');
+            
+            document.getElementById('ticketId').textContent = ticket.id;
+            document.getElementById('ticketDetalles').innerHTML = `
+                <div class="ticket-detalle">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                        <div>
+                            <p><strong>📋 Asunto:</strong></p>
+                            <p style="background: #f8f9fa; padding: 10px; border-radius: 5px;">${ticket.asunto}</p>
+                        </div>
+                        <div>
+                            <p><strong>📊 Estado:</strong></p>
+                            <p><span class="ticket-estado estado-${ticket.estado}">${estadoTexto}</span></p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <p><strong>📅 Fecha de creación:</strong> ${fechaCreacion}</p>
+                    </div>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <h4>💬 Tu mensaje:</h4>
+                        <div class="mensaje-ticket">${ticket.mensaje}</div>
+                    </div>
+                    
+                    ${ticket.respuesta ? `
+                        <div style="margin-bottom: 20px;">
+                            <h4>💡 Respuesta del equipo de soporte:</h4>
+                            <div class="respuesta-ticket">${ticket.respuesta}</div>
+                            <p style="font-size: 14px; color: #666; margin-top: 10px;">
+                                <strong>📅 Respondido el:</strong> ${new Date(ticket.fecha_respuesta).toLocaleString('es-ES')}
+                            </p>
+                        </div>
+                        
+                        <div style="text-align: center; padding: 20px; background: #e8f5e8; border-radius: 10px;">
+                            <p style="color: #388e3c; font-weight: bold; margin: 0;">
+                                ✅ Este ticket ha sido resuelto
+                            </p>
+                            <p style="font-size: 14px; color: #666; margin: 5px 0 0 0;">
+                                Si necesitas más ayuda, crea un nuevo ticket
+                            </p>
+                        </div>
+                    ` : `
+                        <div style="text-align: center; padding: 20px; background: #e3f2fd; border-radius: 10px;">
+                            <p style="color: #1976d2; font-weight: bold; margin: 0;">
+                                ⏳ Esperando respuesta del equipo de soporte
+                            </p>
+                            <p style="font-size: 14px; color: #666; margin: 5px 0 0 0;">
+                                Te contactaremos pronto con una solución
+                            </p>
+                        </div>
+                    `}
+                </div>
+            `;
+            
+            document.getElementById('ticketModal').style.display = 'block';
+        }
+        
+        function cerrarModal() {
+            document.getElementById('ticketModal').style.display = 'none';
+        }
+        
+        // Cerrar modal al hacer clic fuera de él
+        window.onclick = function(event) {
+            const modal = document.getElementById('ticketModal');
+            if (event.target == modal) {
+                modal.style.display = 'none';
+            }
+        }
+        
+        // Actualizar tickets cada 30 segundos si hay tickets abiertos
+        setInterval(() => {
+            const ticketsAbiertos = ticketsActuales.filter(t => t.estado !== 'cerrado');
+            if (ticketsAbiertos.length > 0) {
+                cargarMisTickets();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

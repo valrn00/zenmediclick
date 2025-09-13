@@ -1,40 +1,54 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZenMediClick - Registro</title>
-  <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Paciente - ZenMediClick</title>
+    <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
-  <div class="container">
-    <div class="form-box">
-      <img src="logo.png" alt="Logo ZenMediClick" class="logo">
-      <h2>Registro de usuario</h2>
-      
-      <form id="registroForm">
-        <label for="nombre">Nombre :</label>
-        <input type="text" id="nombre" placeholder="Ingrese su nombre">
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <div class="logo">
+                <div class="lotus-logo">
+    <img src="../img/logo.png" alt="ZenMediClick Logo" class="logo-img">
+</div>
 
-        <label for="contrasena">Contraseña :</label>
-        <input type="password" id="contrasena" placeholder="Ingrese su contraseña">
-
-        <label for="cedula">Cédula :</label>
-        <input type="text" id="cedula" placeholder="Ingrese su cédula">
-
-        <label for="rol">Rol :</label>
-        <select id="rol">
-          <option value="">Seleccione un rol</option>
-          <option value="paciente">Paciente</option>
-          <option value="medico">Médico</option>
-          <option value="admin">Administrador</option>
-        </select>
-
-        <button type="submit">Registrarme</button>
-      </form>
+                <h1>ZenMediClick</h1>
+            </div>
+            <div class="user-info">
+                <span id="userName">Usuario</span>
+                <button onclick="logout()" class="btn-secondary">Cerrar Sesión</button>
+            </div>
+        </header>
+        <main class="dashboard-main"> 
+            <h2>Bienvenido, Paciente</h2> 
+            <div class="dashboard-grid"> 
+                <div class="dashboard-card" onclick="location.href='agendar-cita.html'">
+                    <h3>📅 Agendar Cita</h3>
+                    <p>Programa una nueva cita médica</p>
+                </div>
+                <div class="dashboard-card" onclick="location.href='historial-citas.html'">
+                    <h3>📋 Historial de Citas</h3>
+                    <p>Ver todas tus citas anteriores</p>
+                </div>
+                <div class="dashboard-card" onclick="location.href='cancelar-cita.html'">
+                    <h3>❌ Cancelar Cita</h3>
+                    <p>Cancelar citas programadas</p>
+                </div>
+                <div class="dashboard-card" onclick="location.href='recordatorios.html'">
+                    <h3>🔔 Recordatorios</h3>
+                    <p>Configurar notificaciones</p>
+                </div>
+            </div>
+        </main>
     </div>
-  </div>
-
-  <script src="script.js"></script>
+    <script src="../js/scripts.js"></script>
+    <script>
+        // Verificar que el usuario esté logueado
+        checkAuth();
+        loadUserInfo();
+    </script>
 </body>
 </html>
+        
