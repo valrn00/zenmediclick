@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cancelar Cita - ZenMediClick</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="page-header">
+            <a href="index.html" class="back-button">← Volver</a>
+            <h1>Cancelar cita médica</h1>
+        </header>
+        
+        <div class="form-container">
+            <div class="cita-info">
+                <table>
+                    <tr>
+                        <td><strong>Fecha</strong></td>
+                        <td>25/06</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hora</strong></td>
+                        <td>10:00 AM</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Estado</strong></td>
+                        <td><span class="estado-confirmada">Confirmado</span></td>
+                    </tr>
+                </table>
+                
+                <div class="confirmation">
+                    <p>¿Está segur@ que desea cancelar esta cita?</p>
+                    <div class="buttons">
+                        <button onclick="confirmarCancelacion()" class="btn-primary" style="background: #dc3545;">
+                            Sí, cancelar Cita
+                        </button>
+                        <button onclick="history.back()" class="btn-secondary">
+                            No, volver
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="../js/scripts.js"></script>
+    <script>
+        function confirmarCancelacion() {
+            // Aquí iría la lógica para cancelar
+            alert('Funcionalidad de cancelación (por implementar)');
+        }
+    </script>
+</body>
+</html>
