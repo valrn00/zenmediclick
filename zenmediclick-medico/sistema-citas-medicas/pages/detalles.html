@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalles de la Cita - Sistema de Citas Médicas</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/wireframes.css">
+</head>
+<body>
+    <div class="header">
+        <div class="breadcrumb">
+            <a href="agenda.html">← Volver a Agenda</a>
+            <span>/ Detalles de la Cita</span>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="wireframe active">
+            <div class="wireframe-title">Detalles de la Cita Médica</div>
+            <div class="screen">
+                <div class="title-bar">Detalles de la cita medica</div>
+                
+                <div class="details-box" id="appointmentDetails">
+                    <!-- Los detalles se cargarán dinámicamente -->
+                </div>
+
+                <div class="additional-info">
+                    <h4>Información Adicional</h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <label>Teléfono:</label>
+                            <span id="patientPhone">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Email:</label>
+                            <span id="patientEmail">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>ID Cita:</label>
+                            <span id="appointmentId">-</span>
+                        </div>
+                        <div class="info-item">
+                            <label>Creada:</label>
+                            <span id="createdDate">-</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions-section">
+                    <div class="button-row">
+                        <button class="btn" onclick="editAppointment()">Editar Cita</button>
+                        <button class="btn" onclick="printDetails()">Imprimir</button>
+                        <button class="btn" onclick="sendEmail()">Enviar Email</button>
+                    </div>
+                    
+                    <button class="btn back-btn" onclick="backToAgenda()">Volver a Agendar</button>
+                </div>
+            </div>
+            
+            <div class="zen-text">Z E N</div>
+            <div class="logo">🪷</div>
+            <div class="zen-text-bottom">M E D I C L I C K</div>
+        </div>
+    </div>
+
+    <div class="navigation-links">
+        <a href="../index.html" class="btn">Wireframes Completos</a>
+        <a href="agenda.html" class="btn">Volver a Agenda</a>
+        <a href="observaciones.html" class="btn" id="observationsLink">Registrar Observaciones</a>
+    </div>
+
+    <!-- Modal de edición -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Editar Cita</h3>
+                <span class="close" onclick="closeEditModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div class="form-group">
+                        <label for="editPatient">Paciente:</label>
+                        <input type="text" id="editPatient" name="patient">
+                    </div>
+                    <div class="form-group">
+                        <label for="editDate">Fecha:</label>
+                        <input type="date" id="editDate" name="date">
+                    </div>
+                    <div class="form-group">
+                        <label for="editTime">Hora:</label>
+                        <input type="time" id="editTime" name="time">
+                    </div>
+                    <div class="form-group">
+                        <label for="editReason">Motivo:</label>
+                        <textarea id="editReason" name="reason" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editStatus">Estado:</label>
+                        <select id="editStatus" name="status">
+                            <option value="Confirmada">Confirmada</option>
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="Cancelada">Cancelada</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editPhone">Teléfono:</label>
+                        <input type="tel" id="editPhone" name="phone">
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">Email:</label>
+                        <input type="email" id="editEmail" name="email">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" onclick="saveChanges()">Guardar Cambios</button>
+                <button class="btn" onclick="closeEditModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentAppointment = null;
+
+        // Verificar autenticación y carga de datos
+        function checkAuthAndLoadData() {
+            if (sessionStorage.getItem('userLoggedIn') !== 'true') {
+                alert('Debe iniciar sesión primero');
+                window.location.href = 'login.html';
+                return false;
+            }
+
+            const appointmentData = sessionStorage.getItem('selectedAppointment');
+            if (!appointmentData) {
+                alert('No hay cita seleccionada');
+                window.location.href = 'agenda.html';
+                return false;
+            }
+
+            currentAppointment = JSON.parse(appointmentData);
+            loadAppointmentDetails();
+            return true;
+        }
+
+        // Cargar detalles de la cita
+        function loadAppointmentDetails() {
+            if (!currentAppointment) return;
+
+            const detailsContainer = document.getElementById('appointmentDetails');
+            detailsContainer.innerHTML = `
+                <div><strong>Paciente: <span class="detail-value">${currentAppointment.patient}</span></strong></div>
+                <div><strong>Fecha: <span class="detail-value">${currentAppointment.date}</span></strong></div>
+                <div><strong>Hora: <span class="detail-value">${currentAppointment.time}</span></strong></div>
+                <div><strong>Motivo: <span class="detail-value">${currentAppointment.reason}</span></strong></div>
+                <div><strong>Estado: <span class="detail-value status ${getStatusClass(currentAppointment.status)}">${currentAppointment.status}</span></strong></div>
+            `;
+
+            // Cargar información adicional
+            document.getElementById('patientPhone').textContent = currentAppointment.phone || 'No registrado';
+            document.getElementById('patientEmail').textContent = currentAppointment.email || 'No registrado';
+            document.getElementById('appointmentId').textContent = `#${currentAppointment.id}`;
+            document.getElementById('createdDate').textContent = new Date().toLocaleDateString('es-ES');
+
+            // Habilitar enlace de observaciones
+            const obsLink = document.getElementById('observationsLink');
+            if (obsLink) {
+                obsLink.style.display = 'inline-block';
+            }
+        }
+
+        // Editar cita
+        function editAppointment() {
+            if (!currentAppointment) return;
+
+            // Llenar el formulario con los datos actuales
+            document.getElementById('editPatient').value = currentAppointment.patient;
+            document.getElementById('editDate').value = dateToInputFormat(currentAppointment.date);
+            document.getElementById('editTime').value = timeToInputFormat(currentAppointment.time);
+            document.getElementById('editReason').value = currentAppointment.reason;
+            document.getElementById('editStatus').value = currentAppointment.status;
+            document.getElementById('editPhone').value = currentAppointment.phone || '';
+            document.getElementById('editEmail').value = currentAppointment.email || '';
+
+            // Mostrar modal
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        // Guardar cambios
+        function saveChanges() {
+            const form = document.getElementById('editForm');
+            const formData = new FormData(form);
+
+            // Validar datos
+            if (!formData.get('patient') || !formData.get('date') || !formData.get('time')) {
+                showMessage('Por favor complete todos los campos obligatorios', 'error');
+                return;
+            }
+
+            // Actualizar objeto de cita
+            currentAppointment.patient = formData.get('patient');
+            currentAppointment.date = inputFormatToDate(formData.get('date'));
+            currentAppointment.time = inputFormatToTime(formData.get('time'));
+            currentAppointment.reason = formData.get('reason');
+            currentAppointment.status = formData.get('status');
+            currentAppointment.phone = formData.get('phone');
+            currentAppointment.email = formData.get('email');
+
+            // Actualizar sessionStorage
+            sessionStorage.setItem('selectedAppointment', JSON.stringify(currentAppointment));
+
+            // Recargar detalles
+            loadAppointmentDetails();
+
+            // Cerrar modal
+            closeEditModal();
+
+            showMessage('Cita actualizada correctamente', 'success');
+        }
+
+        // Cerrar modal de edición
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+        }
+
+        // Imprimir detalles
+        function printDetails() {
+            const printContent = `
+                <html>
+                <head>
+                    <title>Detalles de la Cita - ${currentAppointment.patient}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        .header { text-align: center; margin-bottom: 30px; }
+                        .details { margin-bottom: 20px; }
+                        .details div { margin: 10px 0; padding: 5px; }
+                        .label { font-weight: bold; }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h2>ZEN MEDICLICK</h2>
+                        <h3>Detalles de la Cita Médica</h3>
+                    </div>
+                    <div class="details">
+                        <div><span class="label">Paciente:</span> ${currentAppointment.patient}</div>
+                        <div><span class="label">Fecha:</span> ${currentAppointment.date}</div>
+                        <div><span class="label">Hora:</span> ${currentAppointment.time}</div>
+                        <div><span class="label">Motivo:</span> ${currentAppointment.reason}</div>
+                        <div><span class="label">Estado:</span> ${currentAppointment.status}</div>
+                        <div><span class="label">Teléfono:</span> ${currentAppointment.phone || 'No registrado'}</div>
+                        <div><span class="label">Email:</span> ${currentAppointment.email || 'No registrado'}</div>
+                        <div><span class="label">ID Cita:</span> #${currentAppointment.id}</div>
+                    </div>
+                    <div style="margin-top: 50px; text-align: center; font-size: 12px;">
+                        Impreso el ${new Date().toLocaleString('es-ES')}
+                    </div>
+                </body>
+                </html>
+            `;
+
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(printContent);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+        }
+
+        // Enviar email
+        function sendEmail() {
+            const subject = `Detalles de su cita médica - ${currentAppointment.date}`;
+            const body = `Estimado/a ${currentAppointment.patient},\n\n` +
+                        `Le confirmamos los detalles de su cita médica:\n\n` +
+                        `Fecha: ${currentAppointment.date}\n` +
+                        `Hora: ${currentAppointment.time}\n` +
+                        `Motivo: ${currentAppointment.reason}\n` +
+                        `Estado: ${currentAppointment.status}\n\n` +
+                        `Si tiene alguna consulta, no dude en contactarnos.\n\n` +
+                        `Saludos cordiales,\n` +
+                        `ZEN MEDICLICK`;
+
+            const mailtoLink = `mailto:${currentAppointment.email || ''}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            
+            if (currentAppointment.email) {
+                window.location.href = mailtoLink;
+            } else {
+                prompt('Email del paciente:', currentAppointment.email || '');
+            }
+        }
+
+        // Volver a la agenda
+        function backToAgenda() {
+            window.location.href = 'agenda.html';
+        }
+
+        // Funciones auxiliares
+        function getStatusClass(status) {
+            switch (status.toLowerCase()) {
+                case 'confirmada': return 'status-confirmed';
+                case 'pendiente': return 'status-pending';
+                case 'cancelada': return 'status-cancelled';
+                default: return '';
+            }
+        }
+
+        function dateToInputFormat(dateString) {
+            const parts = dateString.split('/');
+            if (parts.length === 3) {
+                return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+            }
+            return '';
+        }
+
+        function inputFormatToDate(inputDate) {
+            const date = new Date(inputDate);
+            return date.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        function timeToInputFormat(timeString) {
+            // Convertir "8:00 AM" a "08:00"
+            const time = timeString.toLowerCase();
+            const parts = time.split(':');
+            let hour = parseInt(parts[0]);
+            const minute = parts[1].split(' ')[0];
+            const ampm = time.includes('pm') ? 'pm' : 'am';
+            
+            if (ampm === 'pm' && hour !== 12) {
+                hour += 12;
+            } else if (ampm === 'am' && hour === 12) {
+                hour = 0;
+            }
+            
+            return `${hour.toString().padStart(2, '0')}:${minute}`;
+        }
+
+        function inputFormatToTime(inputTime) {
+            // Convertir "08:00" a "8:00 AM"
+            const parts = inputTime.split(':');
+            let hour = parseInt(parts[0]);
+            const minute = parts[1];
+            const ampm = hour >= 12 ? 'PM' : 'AM';
+            
+            if (hour > 12) {
+                hour -= 12;
+            } else if (hour === 0) {
+                hour = 12;
+            }
+            
+            return `${hour}:${minute} ${ampm}`;
+        }
+
+        function showMessage(message, type) {
+            const existingMessage = document.querySelector('.message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                border-radius: 5px;
+                z-index: 1001;
+                font-weight: bold;
+                min-width: 250px;
+                text-align: center;
+                animation: slideInRight 0.3s ease;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            `;
+
+            switch (type) {
+                case 'success':
+                    messageDiv.style.background = '#d4edda';
+                    messageDiv.style.color = '#155724';
+                    messageDiv.style.border = '1px solid #c3e6cb';
+                    break;
+                case 'error':
+                    messageDiv.style.background = '#f8d7da';
+                    messageDiv.style.color = '#721c24';
+                    messageDiv.style.border = '1px solid #f5c6cb';
+                    break;
+            }
+
+            document.body.appendChild(messageDiv);
+
+            setTimeout(() => {
+                messageDiv.style.animation = 'slideOutRight 0.3s ease forwards';
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.parentNode.removeChild(messageDiv);
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            checkAuthAndLoadData();
+
+            // Cerrar modal al hacer clic fuera
+            window.onclick = function(event) {
+                const modal = document.getElementById('editModal');
+                if (event.target === modal) {
+                    closeEditModal();
+                }
+            };
+        });
+
+        // Estilos adicionales - CÓDIGO CSS COMPLETO
+        const additionalStyles = document.createElement('style');
+        additionalStyles.textContent = `
+            .header {
+                background: white;
+                padding: 15px 20px;
+                margin-bottom: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+
+            .breadcrumb a {
+                color: #4a90e2;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+            .breadcrumb a:hover {
+                text-decoration: underline;
+            }
+
+            .detail-value {
+                color: #333;
+                font-weight: normal;
+            }
+
+            .additional-info {
+                background: #f8f9fa;
+                padding: 20px;
+                margin: 20px 0;
+                border-radius: 8px;
+                border: 1px solid #dee2e6;
+            }
+
+            .additional-info h4 {
+                margin-bottom: 15px;
+                color: #495057;
+            }
+
+            .info-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 15px;
+            }
+
+            .info-item {
+                display: flex;
+                flex-direction: column;
+            }
+
+            .info-item label {
+                font-weight: bold;
+                color: #6c757d;
+                font-size: 12px;
+                margin-bottom: 5px;
+            }
+
+            .info-item span {
+                color: #495057;
+                font-size: 14px;
+            }
+
+            .actions-section {
+                margin-top: 30px;
+            }
+
+            .status {
+                padding: 4px 8px;
+                border-radius: 12px;
+                font-size: 12px;
+                font-weight: bold;
+            }
+
+            .status-confirmed {
+                background: #d4edda;
+                color: #155724;
+            }
+
+            .status-pending {
+                background: #fff3cd;
+                color: #856404;
+            }
+
+            .status-cancelled {
+                background: #f8d7da;
+                color: #721c24;
+            }
+
+            /* Modal */
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.5);
+                animation: fadeIn 0.3s ease;
+            }
+
+            .modal-content {
+                background-color: #fefefe;
+                margin: 5% auto;
+                padding: 0;
+                border: 1px solid #888;
+                width: 90%;
+                max-width: 600px;
+                border-radius: 8px;
+                animation: slideDown 0.3s ease;
+            }
+
+            .modal-header {
+                padding: 20px;
+                background: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-radius: 8px 8px 0 0;
+            }
+
+            .modal-header h3 {
+                margin: 0;
+                color: #495057;
+            }
+
+            .close {
+                color: #aaa;
+                float: right;
+                font-size: 28px;
+                font-weight: bold;
+                cursor: pointer;
+            }
+
+            .close:hover,
+            .close:focus {
+                color: black;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .modal-footer {
+                padding: 20px;
+                background: #f8f9fa;
+                border-top: 1px solid #dee2e6;
+                text-align: right;
+                border-radius: 0 0 8px 8px;
+            }
+
+            .modal .form-group {
+                margin-bottom: 15px;
+            }
+
+            .modal .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+                color: #495057;
+            }
+
+            .modal .form-group input,
+            .modal .form-group textarea,
+            .modal .form-group select {
+                width: 100%;
+                padding: 8px 12px;
+                border: 2px solid #ced4da;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+
+            .modal .form-group textarea {
+                resize: vertical;
+                min-height: 80px;
+            }
+
+            .navigation-links {
+                text-align: center;
+                margin-top: 30px;
+            }
+
+            .navigation-links .btn {
+                margin: 0 10px;
+                text-decoration: none;
+                display: inline-block;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-50px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(100%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            @keyframes slideOutRight {
+                from {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(100%);
+                }
+            }
+
+            @media (max-width: 768px) {
+                .modal-content {
+                    width: 95%;
+                    margin: 10% auto;
+                }
+
+                .info-grid {
+                    grid-template-columns: 1fr;
+                }
+
+                .button-row {
+                    flex-direction: column;
+                    gap: 10px;
+                }
+
+                .button-row .btn {
+                    margin: 0;
+                }
+            }
+        `;
+        document.head.appendChild(additionalStyles);
+    </script>
+</body>
+</html>

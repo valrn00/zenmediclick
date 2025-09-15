@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Citas Médicas - Wireframes</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/wireframes.css">
+</head>
+<body>
+    <div class="navigation">
+        <h1>Sistema de Citas Médicas - Wireframes</h1>
+        <div class="nav-buttons">
+            <button class="nav-btn active" onclick="showScreen('login')">Login</button>
+            <button class="nav-btn" onclick="showScreen('agenda')">Agenda</button>
+            <button class="nav-btn" onclick="showScreen('detalles')">Detalles</button>
+            <button class="nav-btn" onclick="showScreen('observaciones')">Observaciones</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Pantalla 1: Login -->
+        <div class="wireframe active" id="login">
+            <div class="wireframe-title">Pantalla 1: Login</div>
+            <div class="screen">
+                <div class="title-bar">Sistema de citas medicas</div>
+                <div class="subtitle">Medico</div>
+                
+                <div class="form-group">
+                    <label>Usuario :</label>
+                    <input type="text" id="username">
+                </div>
+                
+                <div class="form-group">
+                    <label>Contraseña :</label>
+                    <input type="password" id="password">
+                </div>
+                
+                <button class="btn btn-primary" onclick="login()">Iniciar sesión</button>
+                
+                <div class="forgot-password">
+                    <a href="#" onclick="forgotPassword()">¿Olvidaste tu contraseña ?</a>
+                </div>
+            </div>
+            
+            <div class="zen-text">Z E N</div>
+            <div class="logo">🪷</div>
+            <div class="zen-text-bottom">M E D I C L I C K</div>
+        </div>
+
+        <!-- Pantalla 2: Agendar del médico -->
+        <div class="wireframe" id="agenda">
+            <div class="wireframe-title">Pantalla 2: Agendar del médico</div>
+            <div class="screen">
+                <div class="title-bar">Agendar del medico</div>
+                
+                <div class="date-section">
+                    <label>Fecha:</label>
+                    <input type="text" id="dateSearch" value="v">
+                    <button class="btn" onclick="searchDate()">Buscar</button>
+                </div>
+                
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Hora</th>
+                            <th>Paciente</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentTable">
+                        <tr onclick="selectAppointment(this)">
+                            <td>8:00 AM</td>
+                            <td>Nicolás Sánchez</td>
+                            <td>Confirmada</td>
+                        </tr>
+                        <tr onclick="selectAppointment(this)">
+                            <td>9:00AM</td>
+                            <td>Andrea Rodriguez</td>
+                            <td>Pendiente</td>
+                        </tr>
+                        <tr onclick="selectAppointment(this)">
+                            <td>10:00 AM</td>
+                            <td>Susy Pérez</td>
+                            <td>Cancelar</td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="button-row">
+                    <button class="btn" onclick="showDetails()">Ver detalles</button>
+                    <button class="btn" onclick="showObservations()">Registrar observaciones</button>
+                </div>
+            </div>
+            
+            <div class="zen-text">Z E N</div>
+            <div class="logo">🪷</div>
+            <div class="zen-text-bottom">M E D I C L I C K</div>
+        </div>
+
+        <!-- Pantalla 3: Detalles de la cita médica -->
+        <div class="wireframe" id="detalles">
+            <div class="wireframe-title">Pantalla 3: Detalles de la cita médica</div>
+            <div class="screen">
+                <div class="title-bar">Detalles de la cita medica</div>
+                
+                <div class="details-box">
+                    <div><strong>Paciente: <span id="detailPatient">Nicolás Sánchez</span></strong></div>
+                    <div><strong>Fecha: <span id="detailDate">25/06/2025</span></strong></div>
+                    <div><strong>Hora: <span id="detailTime">8:00 AM</span></strong></div>
+                    <div><strong>Motivo: <span id="detailReason">Dolor de cabeza</span></strong></div>
+                    <div><strong>Estado: <span id="detailStatus">Dolor de cabeza</span></strong></div>
+                </div>
+                
+                <button class="btn back-btn" onclick="backToAgenda()">Volver a Agendar</button>
+            </div>
+            
+            <div class="zen-text">Z E N</div>
+            <div class="logo">🪷</div>
+            <div class="zen-text-bottom">M E D I C L I C K</div>
+        </div>
+
+        <!-- Pantalla 4: Registrar observaciones -->
+        <div class="wireframe" id="observaciones">
+            <div class="wireframe-title">Pantalla 4: Registrar observaciones</div>
+            <div class="screen">
+                <div class="title-bar">Registrar observaciones</div>
+                
+                <div style="margin-bottom: 15px;">
+                    <div style="margin-bottom: 5px;"><strong>Paciente: <span id="obsPatient">Nicolás Sánchez</span></strong></div>
+                    <div style="margin-bottom: 5px;"><strong>Fecha: <span id="obsDate">25/06/2025</span></strong></div>
+                    <div style="margin-bottom: 15px;"><strong>Hora: <span id="obsTime">8:00 AM</span></strong></div>
+                    <div style="margin-bottom: 10px;"><strong>Observaciones medicas</strong></div>
+                </div>
+                
+                <div style="position: relative;">
+                    <textarea class="textarea" id="medicalObservations" placeholder="Escriba sus observaciones médicas aquí..."></textarea>
+                    <div class="textarea-lines">
+                        ___________________________<br>
+                        ___________________________<br>
+                        ___________________________
+                    </div>
+                </div>
+                
+                <div class="button-row">
+                    <button class="btn" onclick="saveObservations()">Guardar</button>
+                    <button class="btn" onclick="cancelObservations()">Cancelar</button>
+                </div>
+            </div>
+            
+            <div class="zen-text">Z E N</div>
+            <div class="logo">🪷</div>
+            <div class="zen-text-bottom">M E D I C L I C K</div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script src="js/navigation.js"></script>
+</body>
+</html>
