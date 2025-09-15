@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Paciente - ZenMediClick</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <div class="logo">
+                <div class="lotus-logo">
+    <img src="../img/logo.png" alt="ZenMediClick Logo" class="logo-img">
+</div>
+
+                <h1>ZenMediClick</h1>
+            </div>
+            <div class="user-info">
+                <span id="userName">Usuario</span>
+                <button onclick="window.location.href='../../../zenmediclick-dashboard/index.html'" class="btn-secondary">Cerrar Sesión</button>
+            </div>
+        </header>
+        <main class="dashboard-main"> 
+            <h2>Bienvenido, Paciente</h2> 
+            <div class="dashboard-grid"> 
+                <div class="dashboard-card" onclick="location.href='agendar-cita.html'">
+                    <h3>📅 Agendar Cita</h3>
+                    <p>Programa una nueva cita médica</p>
+                </div>
+                <div class="dashboard-card" onclick="location.href='historial-citas.html'">
+                    <h3>📋 Historial de Citas</h3>
+                    <p>Ver todas tus citas anteriores</p>
+                </div>
+                <div class="dashboard-card" onclick="location.href='cancelar-cita.html'">
+                    <h3>❌ Cancelar Cita</h3>
+                    <p>Cancelar citas programadas</p>
+                </div>
+                <div class="dashboard-card" onclick="location.href='recordatorios.html'">
+                    <h3>🔔 Recordatorios</h3>
+                    <p>Configurar notificaciones</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../js/script.js"></script>
+    <script>
+        // Verificar que el usuario esté logueado
+        checkAuth();
+        loadUserInfo();
+    </script>
+</body>
+</html>
+        
