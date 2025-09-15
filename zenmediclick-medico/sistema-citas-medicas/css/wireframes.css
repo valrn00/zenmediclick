@@ -1,0 +1,185 @@
+/* Estilos específicos para wireframes */
+
+.wireframe {
+    background: linear-gradient(90deg, #c7d2fe 0%, #c7d2fe 30%, white 30%, white 70%, #a7f3d0 70%, #a7f3d0 100%);
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    position: relative;
+    min-height: 500px;
+    margin-bottom: 30px;
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.wireframe.active {
+    display: block;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.screen {
+    background: white;
+    border: 2px solid black;
+    padding: 20px;
+    margin: 0 auto;
+    width: 300px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.title-bar {
+    text-align: center;
+    border-bottom: 2px solid black;
+    padding: 10px;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 15px;
+    background: #f8f9fa;
+}
+
+.subtitle {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #666;
+}
+
+/* Logo y elementos de marca */
+.logo {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #e8d5c4, #d4b5a0);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    text-align: center;
+    color: #8b4513;
+    border: 3px solid #8b4513;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+}
+
+.logo:hover {
+    transform: translateY(-50%) scale(1.1);
+}
+
+.zen-text {
+    position: absolute;
+    right: 15px;
+    top: 30%;
+    transform: translateY(-50%) rotate(15deg);
+    font-size: 14px;
+    color: #4a90e2;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.zen-text-bottom {
+    position: absolute;
+    right: 15px;
+    bottom: 30%;
+    transform: translateY(50%) rotate(-15deg);
+    font-size: 14px;
+    color: #4a90e2;
+    font-weight: bold;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.wireframe-title {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Efectos hover para elementos interactivos */
+.wireframe .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.wireframe .form-group input:focus {
+    transform: scale(1.02);
+}
+
+/* Responsive para wireframes */
+@media (max-width: 768px) {
+    .wireframe {
+        padding: 20px;
+        min-height: 400px;
+    }
+    
+    .screen {
+        width: 280px;
+        padding: 15px;
+    }
+    
+    .logo {
+        width: 60px;
+        height: 60px;
+        font-size: 24px;
+    }
+    
+    .zen-text, .zen-text-bottom {
+        font-size: 12px;
+        letter-spacing: 1px;
+    }
+    
+    .wireframe-title {
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+}
+
+@media (max-width: 480px) {
+    .wireframe {
+        padding: 15px;
+    }
+    
+    .screen {
+        width: 260px;
+        padding: 12px;
+    }
+    
+    .logo {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+        right: 10px;
+    }
+    
+    .zen-text {
+        right: 5px;
+        font-size: 10px;
+    }
+    
+    .zen-text-bottom {
+        right: 5px;
+        font-size: 10px;
+    }
+}

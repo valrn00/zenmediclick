@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registrar Observaciones - Sistema de Citas Médicas</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/wireframes.css">
+</head>
+<body>
+    <div class="header">
+        <div class="breadcrumb">
+            <a href="agenda.html">← Volver a Agenda</a>
+            <span>/ Registrar Observaciones</span>
+        </div>
+        <div class="auto-save-indicator" id="autoSaveIndicator" style="display: none;">
+            💾 Guardado automático activado
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="wireframe active">
+            <div class="wireframe-title">Registrar Observaciones Médicas</div>
+            <div class="screen">
+                <div class="title-bar">Registrar observaciones</div>
+                
+                <div class="patient-info" id="patientInfo">
+                    <!-- La información del paciente se cargará dinámicamente -->
+                </div>
+
+                <div class="observations-section">
+                    <div class="section-header">
+                        <label for="medicalObservations"><strong>Observaciones médicas</strong></label>
+                        <div class="tools">
+                            <button class="btn-small" onclick="insertTemplate('examination')">Plantilla Examen</button>
+                            <button class="btn-small" onclick="insertTemplate('diagnosis')">Plantilla Diagnóstico</button>
+                            <button class="btn-small" onclick="clearText()">Limpiar</button>
+                        </div>
+                    </div>
+                    
+                    <div class="textarea-container">
+                        <textarea 
+                            class="textarea" 
+                            id="medicalObservations" 
+                            placeholder="Escriba sus observaciones médicas aquí..."
+                            maxlength="2000">
+                        </textarea>
+                        <div class="textarea-lines">
+                            ___________________________<br>
+                            ___________________________<br>
+                            ___________________________
+                        </div>
+                        <div class="char-counter">
+                            <span id="charCount">0</span>/2000 caracteres
+                        </div>
+                    </div>
+                </div>
+
+                <div class="prescription-section">
+                    <h4>Receta Médica</h4>
+                    <textarea 
+                        id="prescription" 
+                        placeholder="Medicamentos recetados, dosis, frecuencia..."
+                        rows="4">
+                    </textarea>
+                </div>
+
+                <div class="follow-up-section">
+                    <h4>Seguimiento</h4>
+                    <div class="follow-up-options">
+                        <label>
+                            <input type="checkbox" id="followUpRequired"> 
+                            Requiere seguimiento
+                        </label>
+                        <div class="follow-up-details" id="followUpDetails" style="display: none;">
+                            <label for="followUpDate">Fecha de seguimiento:</label>
+                            <input type="date" id="followUpDate">
+                            <label for="followUpNotes">Notas de seguimiento:</label>
+                            <textarea id="followUpNotes" rows="2"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="actions-section">
+                    <div class="button-row">
+                        <button class="btn btn-primary" onclick="saveObservations()">Guardar</button>
+                        <button class="btn" onclick="saveDraft()">Guardar Borrador</button>
+                        <button class="btn" onclick="cancelObservations()">Cancelar</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="zen-text">Z E N</div>
+            <div class="logo">🪷</div>
+            <div class="zen-text-bottom">M E D I C L I C K</div>
+        </div>
+    </div>
+
+    <div class="navigation-links">
+        <a href="../index.html" class="btn">Wireframes Completos</a>
+        <a href="agenda.html" class="btn">Volver a Agenda</a>
+        <a href="detalles.html" class="btn">Ver Detalles</a>
+    </div>
+
+    <!-- Modal de confirmación -->
+    <div id="confirmModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Confirmar Acción</h3>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-primary" id="confirmBtn">Confirmar</button>
+                <button class="btn" onclick="closeConfirmModal()">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentAppointment = null;
+        let autoSaveTimer = null;
+        let hasUnsavedChanges = false;
+
+        // Plantillas predefinidas
+        const templates = {
+            examination: `EXAMEN FÍSICO:
+- Signos vitales: 
+- Inspección general: 
+- Sistemas: 
+
+HALLAZGOS:
+- `,
+            diagnosis: `DIAGNÓSTICO:
+- Diagnóstico principal: 
+- Diagnósticos secundarios: 
+
+PLAN DE TRATAMIENTO:
+- 
+- 
+
+INDICACIONES:
+- `
+        };
+
+        // Verificar autenticación y cargar datos
+        function checkAuthAndLoadData() {
+            if (sessionStorage.getItem('userLoggedIn') !== 'true') {
+                alert('Debe iniciar sesión primero');
+                window.location.href = 'login.html';
+                return false;
+            }
+
+            const appointmentData = sessionStorage.getItem('selectedAppointment');
+            if (!appointmentData) {
+                alert('No hay cita seleccionada');
+                window.location.href = 'agenda.html';
+                return false;
+            }
+
+            currentAppointment = JSON.parse(appointmentData);
+            loadPatientInfo();
+            loadExistingObservations();
+            setupAutoSave();
+            return true;
+        }
+
+        // Cargar información del paciente
+        function loadPatientInfo() {
+            if (!currentAppointment) return;
+
+            const patientInfoContainer = document.getElementById('patientInfo');
+            patientInfoContainer.innerHTML = `
+                <div class="info-row">
+                    <div><strong>Paciente: <span class="info-value">${currentAppointment.patient}</span></strong></div>
+                    <div><strong>ID Cita: <span class="info-value">#${currentAppointment.id}</span></strong></div>
+                </div>
+                <div class="info-row">
+                    <div><strong>Fecha: <span class="info-value">${currentAppointment.date}</span></strong></div>
+                    <div><strong>Hora: <span class="info-value">${currentAppointment.time}</span></strong></div>
+                </div>
+                <div class="info-row">
+                    <div><strong>Motivo: <span class="info-value">${currentAppointment.reason}</span></strong></div>
+                </div>
+            `;
+        }
+
+        // Cargar observaciones existentes (simulación)
+        function loadExistingObservations() {
+            const savedObservations = localStorage.getItem(`observations_${currentAppointment.id}`);
+            const savedPrescription = localStorage.getItem(`prescription_${currentAppointment.id}`);
+            
+            if (savedObservations) {
+                document.getElementById('medicalObservations').value = savedObservations;
+                updateCharCount();
+            }
+            
+            if (savedPrescription) {
+                document.getElementById('prescription').value = savedPrescription;
+            }
+        }
+
+        // Configurar auto-guardado
+        function setupAutoSave() {
+            const textarea = document.getElementById('medicalObservations');
+            const prescription = document.getElementById('prescription');
+            
+            [textarea, prescription].forEach(element => {
+                element.addEventListener('input', function() {
+                    hasUnsavedChanges = true;
+                    clearTimeout(autoSaveTimer);
+                    autoSaveTimer = setTimeout(autoSave, 30000); // Auto-guardar cada 30 segundos
+                });
+            });
+
+            // Mostrar indicador de auto-guardado
+            document.getElementById('autoSaveIndicator').style.display = 'block';
+        }
+
+        // Auto-guardado
+        function autoSave() {
+            const observations = document.getElementById('medicalObservations').value;
+            const prescription = document.getElementById('prescription').value;
+            
+            if (observations.trim() || prescription.trim()) {
+                localStorage.setItem(`observations_${currentAppointment.id}`, observations);
+                localStorage.setItem(`prescription_${currentAppointment.id}`, prescription);
+                
+                showMessage('Borrador guardado automáticamente', 'info');
+                hasUnsavedChanges = false;
+            }
+        }
+
+        // Insertar plantilla
+        function insertTemplate(templateType) {
+            const textarea = document.getElementById('medicalObservations');
+            const template = templates[templateType];
+            
+            if (template) {
+                const currentValue = textarea.value;
+                const newValue = currentValue ? currentValue + '\n\n' + template : template;
+                
+                if (newValue.length <= 2000) {
+                    textarea.value = newValue;
+                    updateCharCount();
+                    hasUnsavedChanges = true;
+                    textarea.focus();
+                } else {
+                    showMessage('La plantilla excede el límite de caracteres', 'error');
+                }
+            }
+        }
+
+        // Limpiar texto
+        function clearText() {
+            if (document.getElementById('medicalObservations').value.trim()) {
+                showConfirmModal(
+                    '¿Está seguro de que desea limpiar todo el texto?',
+                    function() {
+                        document.getElementById('medicalObservations').value = '';
+                        updateCharCount();
+                        hasUnsavedChanges = true;
+                        closeConfirmModal();
+                    }
+                );
+            }
+        }
+
+        // Actualizar contador de caracteres
+        function updateCharCount() {
+            const textarea = document.getElementById('medicalObservations');
+            const charCount = document.getElementById('charCount');
+            const currentLength = textarea.value.length;
+            
+            charCount.textContent = currentLength;
+            
+            // Cambiar color según proximidad al límite
+            if (currentLength > 1800) {
+                charCount.style.color = '#dc3545';
+            } else if (currentLength > 1500) {
+                charCount.style.color = '#fd7e14';
+            } else {
+                charCount.style.color = '#6c757d';
+            }
+        }
+
+        // Guardar observaciones
+        function saveObservations() {
+            const observations = document.getElementById('medicalObservations').value.trim();
+            const prescription = document.getElementById('prescription').value.trim();
+            
+            if (!observations && !prescription) {
+                showMessage('Por favor ingrese al menos observaciones o receta médica', 'error');
+                return;
+            }
+
+            // Crear objeto de observación completa
+            const observationData = {
+                appointmentId: currentAppointment.id,
+                patient: currentAppointment.patient,
+                date: currentAppointment.date,
+                time: currentAppointment.time,
+                observations: observations,
+                prescription: prescription,
+                followUp: {
+                    required: document.getElementById('followUpRequired').checked,
+                    date: document.getElementById('followUpDate').value,
+                    notes: document.getElementById('followUpNotes').value
+                },
+                savedAt: new Date().toISOString(),
+                doctor: sessionStorage.getItem('currentUser') || 'Dr. Médico'
+            };
+
+            // Simular guardado en servidor
+            localStorage.setItem(`final_observations_${currentAppointment.id}`, JSON.stringify(observationData));
+            
+            // Limpiar auto-guardado
+            localStorage.removeItem(`observations_${currentAppointment.id}`);
+            localStorage.removeItem(`prescription_${currentAppointment.id}`);
+            
+            hasUnsavedChanges = false;
+            showMessage('Observaciones guardadas exitosamente', 'success');
+            
+            setTimeout(() => {
+                window.location.href = 'agenda.html';
+            }, 2000);
+        }
+
+        // Guardar borrador
+        function saveDraft() {
+            autoSave();
+            showMessage('Borrador guardado correctamente', 'success');
+        }
+
+        // Cancelar observaciones
+        function cancelObservations() {
+            if (hasUnsavedChanges) {
+                showConfirmModal(
+                    '¿Está seguro de que desea cancelar? Se perderán los cambios no guardados.',
+                    function() {
+                        closeConfirmModal();
+                        window.location.href = 'agenda.html';
+                    }
+                );
+            } else {
+                window.location.href = 'agenda.html';
+            }
+        }
+
+        // Modal de confirmación
+        function showConfirmModal(message, confirmCallback) {
+            document.getElementById('confirmMessage').textContent = message;
+            document.getElementById('confirmBtn').onclick = confirmCallback;
+            document.getElementById('confirmModal').style.display = 'block';
+        }
+
+        function closeConfirmModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+
+        // Mostrar mensaje
+        function showMessage(message, type) {
+            const existingMessage = document.querySelector('.message');
+            if (existingMessage) {
+                existingMessage.remove();
+            }
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = message;
+            
+            messageDiv.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                border-radius: 5px;
+                z-index: 1001;
+                font-weight: bold;
+                min-width: 250px;
+                text-align: center;
+                animation: slideInRight 0.3s ease;
+                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            `;
+
+            switch (type) {
+                case 'success':
+                    messageDiv.style.background = '#d4edda';
+                    messageDiv.style.color = '#155724';
+                    messageDiv.style.border = '1px solid #c3e6cb';
+                    break;
+                case 'error':
+                    messageDiv.style.background = '#f8d7da';
+                    messageDiv.style.color = '#721c24';
+                    messageDiv.style.border = '1px solid #f5c6cb';
+                    break;
+                case 'info':
+                    messageDiv.style.background = '#cce7ff';
+                    messageDiv.style.color = '#004085';
+                    messageDiv.style.border = '1px solid #99d5ff';
+                    break;
+            }
+
+            document.body.appendChild(messageDiv);
+
+            setTimeout(() => {
+                messageDiv.style.animation = 'slideOutRight 0.3s ease forwards';
+                setTimeout(() => {
+                    if (messageDiv.parentNode) {
+                        messageDiv.parentNode.removeChild(messageDiv);
+                    }
+                }, 300);
+            }, 4000);
+        }
+
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkAuthAndLoadData()) return;
+
+            // Contador de caracteres
+            document.getElementById('medicalObservations').addEventListener('input', updateCharCount);
+            updateCharCount();
+
+            // Seguimiento
+            document.getElementById('followUpRequired').addEventListener('change', function() {
+                const details = document.getElementById('followUpDetails');
+                details.style.display = this.checked ? 'block' : 'none';
+            });
+
+            // Prevenir cierre accidental
+            window.addEventListener('beforeunload', function(e) {
+                if (hasUnsavedChanges) {
+                    e.preventDefault();
+                    e.returnValue = '';
+                }
+            });
+
+            // Cerrar modal al hacer clic fuera
+            window.onclick = function(event) {
+                const modal = document.getElementById('confirmModal');
+                if (event.target === modal) {
+                    closeConfirmModal();
+                }
+            };
+
+            // Focus en textarea
+            document.getElementById('medicalObservations').focus();
+        });
+
+        // Estilos adicionales
+        const additionalStyles = document.createElement('style');
+        additionalStyles.textContent = `
+            .header {
+                background: white;
+                padding: 15px 20px;
+                margin-bottom: 20px;
+                border-radius: 8px;
+                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+
+            .breadcrumb a {
+                color: #4a90e2;
+                text-decoration: none;
+                font-weight: bold;
+            }
+
+            .breadcrumb a:hover {
+                text-decoration: underline;
+            }
+
+            .auto-save-indicator {
+                color: #28a745;
+                font-size: 14px;
+                font-weight: bold;
+            }
+
+            .patient-info {
+                background: #f8f9fa;
+                padding: 15px;
+                margin-bottom: 20px;
+                border-radius: 8px;
+                border: 1px solid #dee2e6;
+            }
+
+            .info-row {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 8px;
+                flex-wrap: wrap;
+            }
+
+            .info-row:last-child {
+                margin-bottom: 0;
+            }
+
+            .info-value {
+                color: #495057;
+                font-weight: normal;
+            }
+
+            .observations-section {
+                margin-bottom: 25px;
+            }
+
+            .section-header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 10px;
+                flex-wrap: wrap;
+            }
+
+            .tools {
+                display: flex;
+                gap: 5px;
+                flex-wrap: wrap;
+            }
+
+            .btn-small {
+                padding: 4px 8px;
+                font-size: 11px;
+                border: 1px solid #6c757d;
+                background: white;
+                cursor: pointer;
+                border-radius: 3px;
+                margin: 2px;
+            }
+
+            .btn-small:hover {
+                background: #f8f9fa;
+            }
+
+            .textarea-container {
+                position: relative;
+            }
+
+            .textarea {
+                background: rgba(255, 255, 255, 0.9);
+                position: relative;
+                z-index: 2;
+            }
+
+            .textarea:focus + .textarea-lines {
+                opacity: 0.3;
+            }
+
+            .char-counter {
+                text-align: right;
+                font-size: 12px;
+                color: #6c757d;
+                margin-top: 5px;
+            }
+
+            .prescription-section,
+            .follow-up-section {
+                background: #f8f9fa;
+                padding: 15px;
+                margin-bottom: 20px;
+                border-radius: 8px;
+                border: 1px solid #dee2e6;
+            }
+
+            .prescription-section h4,
+            .follow-up-section h4 {
+                margin-bottom: 10px;
+                color: #495057;
+            }
+
+            .prescription-section textarea {
+                width: 100%;
+                border: 2px solid #ced4da;
+                padding: 8px 12px;
+                border-radius: 4px;
+                font-size: 14px;
+                resize: vertical;
+            }
+
+            .follow-up-options label {
+                display: flex;
+                align-items: center;
+                margin-bottom: 15px;
+                cursor: pointer;
+            }
+
+            .follow-up-options input[type="checkbox"] {
+                margin-right: 10px;
+                transform: scale(1.2);
+            }
+
+            .follow-up-details {
+                padding-left: 30px;
+            }
+
+            .follow-up-details label {
+                display: block;
+                margin: 10px 0 5px 0;
+                font-weight: bold;
+            }
+
+            .follow-up-details input,
+            .follow-up-details textarea {
+                width: 100%;
+                border: 2px solid #ced4da;
+                padding: 8px 12px;
+                border-radius: 4px;
+                font-size: 14px;
+            }
+
+            .actions-section {
+                margin-top: 30px;
+            }
+
+            /* Modal */
+            .modal {
+                display: none;
+                position: fixed;
+                z-index: 1000;
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0,0,0,0.5);
+                animation: fadeIn 0.3s ease;
+            }
+
+            .modal-content {
+                background-color: #fefefe;
+                margin: 15% auto;
+                padding: 0;
+                border: 1px solid #888;
+                width: 90%;
+                max-width: 500px;
+                border-radius: 8px;
+                animation: slideDown 0.3s ease;
+            }
+
+            .modal-header {
+                padding: 20px;
+                background: #f8f9fa;
+                border-bottom: 1px solid #dee2e6;
+                border-radius: 8px 8px 0 0;
+            }
+
+            .modal-header h3 {
+                margin: 0;
+                color: #495057;
+            }
+
+            .modal-body {
+                padding: 20px;
+            }
+
+            .modal-footer {
+                padding: 20px;
+                background: #f8f9fa;
+                border-top: 1px solid #dee2e6;
+                text-align: right;
+                border-radius: 0 0 8px 8px;
+            }
+
+            .navigation-links {
+                text-align: center;
+                margin-top: 30px;
+            }
+
+            .navigation-links .btn {
+                margin: 0 10px;
+                text-decoration: none;
+                display: inline-block;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-50px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes fadeIn {
+                from { opacity: 0; }
+                to { opacity: 1; }
+            }
+
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(100%);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+
+            @keyframes slideOutRight {
+                from {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(100%);
+                }
+            }
+
+            @media (max-width: 768px) {
+                .header {
+                    flex-direction: column;
+                    gap: 10px;
+                }
+
+                .info-row {
+                    flex-direction: column;
+                    gap: 5px;
+                }
+
+                .section-header {
+                    flex-direction: column;
+                    align-items: flex-start;
+                    gap: 10px;
+                }
+
+                .tools {
+                    width: 100%;
+                    justify-content: flex-start;
+                }
+
+                .button-row {
+                    flex-direction: column;
+                    gap: 10px;
+                }
+
+                .button-row .btn {
+                    margin: 0;
+                }
+
+                .modal-content {
+                    width: 95%;
+                    margin: 10% auto;
+                }
+            }
+        `;
+        document.head.appendChild(additionalStyles);
+    </script>
+</body>
+</html>
