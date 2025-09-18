@@ -1,3 +1,5 @@
+
+
 // 💾 BASE DE DATOS SIMULADA (misma estructura que login y register)
 const DATABASE = {
     usuarios: [
@@ -164,7 +166,6 @@ class PasswordRecovery {
 
 // 🖥️ MANEJO DE LA INTERFAZ DE USUARIO
 
-let currentStep = 1;
 let generatedCode = '';
 
 // Paso 1: Solicitar recuperación
@@ -196,10 +197,9 @@ document.getElementById('requestForm').addEventListener('submit', async function
             showMessage(`❌ ${result.message}`, 'error');
         }
         
-    } catch (error) {
+    } catch {
         showMessage('❌ Error de conexión. Intenta nuevamente.', 'error');
     }
-    
     btn.classList.remove('loading');
     btn.disabled = false;
 });
@@ -303,7 +303,6 @@ function goToStep(step) {
     const progress = (step / 4) * 100;
     document.getElementById('progressFill').style.width = `${progress}%`;
     
-    currentStep = step;
     console.log(`📍 Paso actual: ${step}`);
 }
 
@@ -316,23 +315,11 @@ function showMessage(message, type = 'info') {
     }, 5000);
 }
 
-function resendCode() {
-    // Generar nuevo código
-    generatedCode = Math.floor(100000 + Math.random() * 900000).toString();
-    document.getElementById('demoCode').textContent = generatedCode;
-    
-    // Actualizar en sessionStorage
-    const recoveryData = JSON.parse(sessionStorage.getItem('recovery_data') || '{}');
-    recoveryData.verificationCode = generatedCode;
-    recoveryData.expiresAt = new Date(Date.now() + 15 * 60 * 1000).toISOString();
-    sessionStorage.setItem('recovery_data', JSON.stringify(recoveryData));
-    
-    showMessage('📧 Nuevo código enviado', 'success');
-}
 
+// Valida que la contraseña cumpla requisitos mínimos
 function validatePasswordRequirements(password) {
-    return password.length >= 6 && 
-           /[A-Z]/.test(password) && 
+    return password.length >= 6 &&
+           /[A-Z]/.test(password) &&
            /\d/.test(password);
 }
 
@@ -385,6 +372,7 @@ function updatePasswordStrength(password) {
     }
 }
 
-function goToLogin() {
-    window.location.href = 'login.html';
-}
+// Si necesitas usar goToLogin, descomenta la siguiente función:
+// function goToLogin() {
+//     window.location.href = 'login.html';
+// }

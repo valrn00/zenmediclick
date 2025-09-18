@@ -1,0 +1,24 @@
+{
+  "successfulLogin": {
+    "success": true,
+    "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoidGVzdEB0ZXN0LmNvbSIsInJvbGUiOiJtZWRpY28iLCJpYXQiOjE2MjM0NTY3ODksImV4cCI6MTYyMzQ2MDM4OX0.signature",
+    "user": {
+      "id": 1,
+      "email": "medico@zenmediclick.com",
+      "role": "medico",
+      "firstName": "Dr. Juan",
+      "lastName": "Pérez"
+    },
+    "redirectUrl": "/dashboard/medico"
+  },
+  "failedLogin": {
+    "success": false,
+    "error": "Credenciales incorrectas",
+    "attempts": 1
+  },
+  "blockedAccount": {
+    "success": false,
+    "error": "Cuenta temporalmente bloqueada. Intente más tarde.",
+    "blockedUntil": "2024-12-25T10:30:00.000Z"
+  }
+}

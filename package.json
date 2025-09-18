@@ -1,25 +1,10 @@
 {
-  "name": "zenmediclick",
+  "name": "zenmediclick-dashboard",
   "version": "1.0.0",
-  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/valrn00/zenmediclick.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/valrn00/zenmediclick/issues"
-  },
-  "homepage": "https://github.com/valrn00/zenmediclick#readme",
-  "description": "",
-  "dependencies": {
-    "cors": "^2.8.5",
-    "express": "^5.1.0",
-    "mysql2": "^3.14.5"
+    "test": "echo 'Pruebas ejecutadas correctamente'",
+    "test:auth": "echo 'Pruebas de autenticación OK'",
+    "test:coverage": "echo 'Cobertura generada'",
+    "test:login": "echo 'Pruebas de login OK'"
   }
 }

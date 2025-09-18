@@ -1,0 +1,41 @@
+{
+  "validUsers": [
+    {
+      "id": 1,
+      "email": "medico@zenmediclick.com",
+      "password": "$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
+      "role": "medico",
+      "active": true,
+      "firstName": "Dr. Juan",
+      "lastName": "Pérez",
+      "specialization": "Cardiología"
+    },
+    {
+      "id": 2,
+      "email": "paciente@zenmediclick.com",
+      "password": "$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
+      "role": "paciente",
+      "active": true,
+      "firstName": "María",
+      "lastName": "González"
+    },
+    {
+      "id": 3,
+      "email": "admin@zenmediclick.com",
+      "password": "$2b$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy",
+      "role": "administrador",
+      "active": true,
+      "firstName": "Carlos",
+      "lastName": "Admin"
+    }
+  ],
+  "inactiveUsers": [
+    {
+      "id": 4,
+      "email": "inactive@zenmediclick.com",
+      "password": "$2b$10$hashedpassword",
+      "role": "paciente",
+      "active": false
+    }
+  ]
+}
