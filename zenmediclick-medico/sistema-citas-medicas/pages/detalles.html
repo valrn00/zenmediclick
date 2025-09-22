@@ -3,666 +3,928 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalles de la Cita - Sistema de Citas Médicas</title>
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/wireframes.css">
-</head>
-<body>
-    <div class="header">
-        <div class="breadcrumb">
-            <a href="agenda.html">← Volver a Agenda</a>
-            <span>/ Detalles de la Cita</span>
-        </div>
-    </div>
+    <title>Detalles de Citas - ZenMediClick</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <div class="container">
-        <div class="wireframe active">
-            <div class="wireframe-title">Detalles de la Cita Médica</div>
-            <div class="screen">
-                <div class="title-bar">Detalles de la cita medica</div>
-                
-                <div class="details-box" id="appointmentDetails">
-                    <!-- Los detalles se cargarán dinámicamente -->
-                </div>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
 
-                <div class="additional-info">
-                    <h4>Información Adicional</h4>
-                    <div class="info-grid">
-                        <div class="info-item">
-                            <label>Teléfono:</label>
-                            <span id="patientPhone">-</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Email:</label>
-                            <span id="patientEmail">-</span>
-                        </div>
-                        <div class="info-item">
-                            <label>ID Cita:</label>
-                            <span id="appointmentId">-</span>
-                        </div>
-                        <div class="info-item">
-                            <label>Creada:</label>
-                            <span id="createdDate">-</span>
-                        </div>
-                    </div>
-                </div>
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
 
-                <div class="actions-section">
-                    <div class="button-row">
-                        <button class="btn" onclick="editAppointment()">Editar Cita</button>
-                        <button class="btn" onclick="printDetails()">Imprimir</button>
-                        <button class="btn" onclick="sendEmail()">Enviar Email</button>
-                    </div>
-                    
-                    <button class="btn back-btn" onclick="backToAgenda()">Volver a Agendar</button>
-                </div>
-            </div>
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .main-content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 300;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .filters-section {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .filters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            align-items: end;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .filter-input {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        .filter-select {
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+        }
+
+        .filter-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .details-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 30px;
+        }
+
+        .citas-list {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .cita-card {
+            background: linear-gradient(135deg, #f8f9ff, #ffffff);
+            border: 1px solid #e8ecf4;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .cita-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .cita-card.selected {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .cita-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .cita-fecha {
+            font-size: 18px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .cita-hora {
+            font-size: 16px;
+            color: #666;
+            background: #f0f2ff;
+            padding: 4px 12px;
+            border-radius: 20px;
+        }
+
+        .cita-paciente {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .cita-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+            color: #333;
+        }
+
+        .cita-status {
+            display: inline-block;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+
+        .status-confirmada {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-pendiente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-completada {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .status-cancelada {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .detail-panel {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .detail-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .detail-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .detail-info {
+            background: #f8f9ff;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .detail-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .action-btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 1024px) {
+            .details-container {
+                grid-template-columns: 1fr;
+            }
             
-            <div class="zen-text">Z E N</div>
-            <div class="logo">🪷</div>
-            <div class="zen-text-bottom">M E D I C L I C K</div>
-        </div>
-    </div>
-
-    <div class="navigation-links">
-        <a href="../index.html" class="btn">Wireframes Completos</a>
-        <a href="agenda.html" class="btn">Volver a Agenda</a>
-        <a href="observaciones.html" class="btn" id="observationsLink">Registrar Observaciones</a>
-    </div>
-
-    <!-- Modal de edición -->
-    <div id="editModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Editar Cita</h3>
-                <span class="close" onclick="closeEditModal()">&times;</span>
-            </div>
-            <div class="modal-body">
-                <form id="editForm">
-                    <div class="form-group">
-                        <label for="editPatient">Paciente:</label>
-                        <input type="text" id="editPatient" name="patient">
-                    </div>
-                    <div class="form-group">
-                        <label for="editDate">Fecha:</label>
-                        <input type="date" id="editDate" name="date">
-                    </div>
-                    <div class="form-group">
-                        <label for="editTime">Hora:</label>
-                        <input type="time" id="editTime" name="time">
-                    </div>
-                    <div class="form-group">
-                        <label for="editReason">Motivo:</label>
-                        <textarea id="editReason" name="reason" rows="3"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="editStatus">Estado:</label>
-                        <select id="editStatus" name="status">
-                            <option value="Confirmada">Confirmada</option>
-                            <option value="Pendiente">Pendiente</option>
-                            <option value="Cancelada">Cancelada</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="editPhone">Teléfono:</label>
-                        <input type="tel" id="editPhone" name="phone">
-                    </div>
-                    <div class="form-group">
-                        <label for="editEmail">Email:</label>
-                        <input type="email" id="editEmail" name="email">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" onclick="saveChanges()">Guardar Cambios</button>
-                <button class="btn" onclick="closeEditModal()">Cancelar</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let currentAppointment = null;
-
-        // Verificar autenticación y carga de datos
-        function checkAuthAndLoadData() {
-            if (sessionStorage.getItem('userLoggedIn') !== 'true') {
-                alert('Debe iniciar sesión primero');
-                window.location.href = 'login.html';
-                return false;
-            }
-
-            const appointmentData = sessionStorage.getItem('selectedAppointment');
-            if (!appointmentData) {
-                alert('No hay cita seleccionada');
-                window.location.href = 'agenda.html';
-                return false;
-            }
-
-            currentAppointment = JSON.parse(appointmentData);
-            loadAppointmentDetails();
-            return true;
-        }
-
-        // Cargar detalles de la cita
-        function loadAppointmentDetails() {
-            if (!currentAppointment) return;
-
-            const detailsContainer = document.getElementById('appointmentDetails');
-            detailsContainer.innerHTML = `
-                <div><strong>Paciente: <span class="detail-value">${currentAppointment.patient}</span></strong></div>
-                <div><strong>Fecha: <span class="detail-value">${currentAppointment.date}</span></strong></div>
-                <div><strong>Hora: <span class="detail-value">${currentAppointment.time}</span></strong></div>
-                <div><strong>Motivo: <span class="detail-value">${currentAppointment.reason}</span></strong></div>
-                <div><strong>Estado: <span class="detail-value status ${getStatusClass(currentAppointment.status)}">${currentAppointment.status}</span></strong></div>
-            `;
-
-            // Cargar información adicional
-            document.getElementById('patientPhone').textContent = currentAppointment.phone || 'No registrado';
-            document.getElementById('patientEmail').textContent = currentAppointment.email || 'No registrado';
-            document.getElementById('appointmentId').textContent = `#${currentAppointment.id}`;
-            document.getElementById('createdDate').textContent = new Date().toLocaleDateString('es-ES');
-
-            // Habilitar enlace de observaciones
-            const obsLink = document.getElementById('observationsLink');
-            if (obsLink) {
-                obsLink.style.display = 'inline-block';
+            .detail-panel {
+                position: static;
             }
         }
 
-        // Editar cita
-        function editAppointment() {
-            if (!currentAppointment) return;
-
-            // Llenar el formulario con los datos actuales
-            document.getElementById('editPatient').value = currentAppointment.patient;
-            document.getElementById('editDate').value = dateToInputFormat(currentAppointment.date);
-            document.getElementById('editTime').value = timeToInputFormat(currentAppointment.time);
-            document.getElementById('editReason').value = currentAppointment.reason;
-            document.getElementById('editStatus').value = currentAppointment.status;
-            document.getElementById('editPhone').value = currentAppointment.phone || '';
-            document.getElementById('editEmail').value = currentAppointment.email || '';
-
-            // Mostrar modal
-            document.getElementById('editModal').style.display = 'block';
-        }
-
-        // Guardar cambios
-        function saveChanges() {
-            const form = document.getElementById('editForm');
-            const formData = new FormData(form);
-
-            // Validar datos
-            if (!formData.get('patient') || !formData.get('date') || !formData.get('time')) {
-                showMessage('Por favor complete todos los campos obligatorios', 'error');
-                return;
-            }
-
-            // Actualizar objeto de cita
-            currentAppointment.patient = formData.get('patient');
-            currentAppointment.date = inputFormatToDate(formData.get('date'));
-            currentAppointment.time = inputFormatToTime(formData.get('time'));
-            currentAppointment.reason = formData.get('reason');
-            currentAppointment.status = formData.get('status');
-            currentAppointment.phone = formData.get('phone');
-            currentAppointment.email = formData.get('email');
-
-            // Actualizar sessionStorage
-            sessionStorage.setItem('selectedAppointment', JSON.stringify(currentAppointment));
-
-            // Recargar detalles
-            loadAppointmentDetails();
-
-            // Cerrar modal
-            closeEditModal();
-
-            showMessage('Cita actualizada correctamente', 'success');
-        }
-
-        // Cerrar modal de edición
-        function closeEditModal() {
-            document.getElementById('editModal').style.display = 'none';
-        }
-
-        // Imprimir detalles
-        function printDetails() {
-            const printContent = `
-                <html>
-                <head>
-                    <title>Detalles de la Cita - ${currentAppointment.patient}</title>
-                    <style>
-                        body { font-family: Arial, sans-serif; padding: 20px; }
-                        .header { text-align: center; margin-bottom: 30px; }
-                        .details { margin-bottom: 20px; }
-                        .details div { margin: 10px 0; padding: 5px; }
-                        .label { font-weight: bold; }
-                    </style>
-                </head>
-                <body>
-                    <div class="header">
-                        <h2>ZEN MEDICLICK</h2>
-                        <h3>Detalles de la Cita Médica</h3>
-                    </div>
-                    <div class="details">
-                        <div><span class="label">Paciente:</span> ${currentAppointment.patient}</div>
-                        <div><span class="label">Fecha:</span> ${currentAppointment.date}</div>
-                        <div><span class="label">Hora:</span> ${currentAppointment.time}</div>
-                        <div><span class="label">Motivo:</span> ${currentAppointment.reason}</div>
-                        <div><span class="label">Estado:</span> ${currentAppointment.status}</div>
-                        <div><span class="label">Teléfono:</span> ${currentAppointment.phone || 'No registrado'}</div>
-                        <div><span class="label">Email:</span> ${currentAppointment.email || 'No registrado'}</div>
-                        <div><span class="label">ID Cita:</span> #${currentAppointment.id}</div>
-                    </div>
-                    <div style="margin-top: 50px; text-align: center; font-size: 12px;">
-                        Impreso el ${new Date().toLocaleString('es-ES')}
-                    </div>
-                </body>
-                </html>
-            `;
-
-            const printWindow = window.open('', '_blank');
-            printWindow.document.write(printContent);
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
-        }
-
-        // Enviar email
-        function sendEmail() {
-            const subject = `Detalles de su cita médica - ${currentAppointment.date}`;
-            const body = `Estimado/a ${currentAppointment.patient},\n\n` +
-                        `Le confirmamos los detalles de su cita médica:\n\n` +
-                        `Fecha: ${currentAppointment.date}\n` +
-                        `Hora: ${currentAppointment.time}\n` +
-                        `Motivo: ${currentAppointment.reason}\n` +
-                        `Estado: ${currentAppointment.status}\n\n` +
-                        `Si tiene alguna consulta, no dude en contactarnos.\n\n` +
-                        `Saludos cordiales,\n` +
-                        `ZEN MEDICLICK`;
-
-            const mailtoLink = `mailto:${currentAppointment.email || ''}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-            
-            if (currentAppointment.email) {
-                window.location.href = mailtoLink;
-            } else {
-                prompt('Email del paciente:', currentAppointment.email || '');
-            }
-        }
-
-        // Volver a la agenda
-        function backToAgenda() {
-            window.location.href = 'agenda.html';
-        }
-
-        // Funciones auxiliares
-        function getStatusClass(status) {
-            switch (status.toLowerCase()) {
-                case 'confirmada': return 'status-confirmed';
-                case 'pendiente': return 'status-pending';
-                case 'cancelada': return 'status-cancelled';
-                default: return '';
-            }
-        }
-
-        function dateToInputFormat(dateString) {
-            const parts = dateString.split('/');
-            if (parts.length === 3) {
-                return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-            }
-            return '';
-        }
-
-        function inputFormatToDate(inputDate) {
-            const date = new Date(inputDate);
-            return date.toLocaleDateString('es-ES', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric'
-            });
-        }
-
-        function timeToInputFormat(timeString) {
-            // Convertir "8:00 AM" a "08:00"
-            const time = timeString.toLowerCase();
-            const parts = time.split(':');
-            let hour = parseInt(parts[0]);
-            const minute = parts[1].split(' ')[0];
-            const ampm = time.includes('pm') ? 'pm' : 'am';
-            
-            if (ampm === 'pm' && hour !== 12) {
-                hour += 12;
-            } else if (ampm === 'am' && hour === 12) {
-                hour = 0;
-            }
-            
-            return `${hour.toString().padStart(2, '0')}:${minute}`;
-        }
-
-        function inputFormatToTime(inputTime) {
-            // Convertir "08:00" a "8:00 AM"
-            const parts = inputTime.split(':');
-            let hour = parseInt(parts[0]);
-            const minute = parts[1];
-            const ampm = hour >= 12 ? 'PM' : 'AM';
-            
-            if (hour > 12) {
-                hour -= 12;
-            } else if (hour === 0) {
-                hour = 12;
-            }
-            
-            return `${hour}:${minute} ${ampm}`;
-        }
-
-        function showMessage(message, type) {
-            const existingMessage = document.querySelector('.message');
-            if (existingMessage) {
-                existingMessage.remove();
-            }
-
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
-            messageDiv.textContent = message;
-            
-            messageDiv.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 15px 25px;
-                border-radius: 5px;
-                z-index: 1001;
-                font-weight: bold;
-                min-width: 250px;
-                text-align: center;
-                animation: slideInRight 0.3s ease;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            `;
-
-            switch (type) {
-                case 'success':
-                    messageDiv.style.background = '#d4edda';
-                    messageDiv.style.color = '#155724';
-                    messageDiv.style.border = '1px solid #c3e6cb';
-                    break;
-                case 'error':
-                    messageDiv.style.background = '#f8d7da';
-                    messageDiv.style.color = '#721c24';
-                    messageDiv.style.border = '1px solid #f5c6cb';
-                    break;
-            }
-
-            document.body.appendChild(messageDiv);
-
-            setTimeout(() => {
-                messageDiv.style.animation = 'slideOutRight 0.3s ease forwards';
-                setTimeout(() => {
-                    if (messageDiv.parentNode) {
-                        messageDiv.parentNode.removeChild(messageDiv);
-                    }
-                }, 300);
-            }, 3000);
-        }
-
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            checkAuthAndLoadData();
-
-            // Cerrar modal al hacer clic fuera
-            window.onclick = function(event) {
-                const modal = document.getElementById('editModal');
-                if (event.target === modal) {
-                    closeEditModal();
-                }
-            };
-        });
-
-        // Estilos adicionales - CÓDIGO CSS COMPLETO
-        const additionalStyles = document.createElement('style');
-        additionalStyles.textContent = `
+        @media (max-width: 768px) {
             .header {
-                background: white;
                 padding: 15px 20px;
-                margin-bottom: 20px;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            }
-
-            .breadcrumb a {
-                color: #4a90e2;
-                text-decoration: none;
-                font-weight: bold;
-            }
-
-            .breadcrumb a:hover {
-                text-decoration: underline;
-            }
-
-            .detail-value {
-                color: #333;
-                font-weight: normal;
-            }
-
-            .additional-info {
-                background: #f8f9fa;
-                padding: 20px;
-                margin: 20px 0;
-                border-radius: 8px;
-                border: 1px solid #dee2e6;
-            }
-
-            .additional-info h4 {
-                margin-bottom: 15px;
-                color: #495057;
-            }
-
-            .info-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                flex-direction: column;
                 gap: 15px;
             }
 
-            .info-item {
-                display: flex;
-                flex-direction: column;
-            }
-
-            .info-item label {
-                font-weight: bold;
-                color: #6c757d;
-                font-size: 12px;
-                margin-bottom: 5px;
-            }
-
-            .info-item span {
-                color: #495057;
-                font-size: 14px;
-            }
-
-            .actions-section {
-                margin-top: 30px;
-            }
-
-            .status {
-                padding: 4px 8px;
-                border-radius: 12px;
-                font-size: 12px;
-                font-weight: bold;
-            }
-
-            .status-confirmed {
-                background: #d4edda;
-                color: #155724;
-            }
-
-            .status-pending {
-                background: #fff3cd;
-                color: #856404;
-            }
-
-            .status-cancelled {
-                background: #f8d7da;
-                color: #721c24;
-            }
-
-            /* Modal */
-            .modal {
-                display: none;
-                position: fixed;
-                z-index: 1000;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0,0,0,0.5);
-                animation: fadeIn 0.3s ease;
-            }
-
-            .modal-content {
-                background-color: #fefefe;
-                margin: 5% auto;
-                padding: 0;
-                border: 1px solid #888;
-                width: 90%;
-                max-width: 600px;
-                border-radius: 8px;
-                animation: slideDown 0.3s ease;
-            }
-
-            .modal-header {
-                padding: 20px;
-                background: #f8f9fa;
-                border-bottom: 1px solid #dee2e6;
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                border-radius: 8px 8px 0 0;
-            }
-
-            .modal-header h3 {
-                margin: 0;
-                color: #495057;
-            }
-
-            .close {
-                color: #aaa;
-                float: right;
-                font-size: 28px;
-                font-weight: bold;
-                cursor: pointer;
-            }
-
-            .close:hover,
-            .close:focus {
-                color: black;
-            }
-
-            .modal-body {
+            .main-content {
                 padding: 20px;
             }
 
-            .modal-footer {
-                padding: 20px;
-                background: #f8f9fa;
-                border-top: 1px solid #dee2e6;
-                text-align: right;
-                border-radius: 0 0 8px 8px;
+            .filters-grid {
+                grid-template-columns: 1fr;
             }
 
-            .modal .form-group {
-                margin-bottom: 15px;
+            .cita-info {
+                grid-template-columns: 1fr;
             }
 
-            .modal .form-group label {
-                display: block;
-                margin-bottom: 5px;
-                font-weight: bold;
-                color: #495057;
+            .stats-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🏥</div>
+            <span>ZenMediClick</span>
+        </div>
+        <div class="nav-buttons">
+            <a href="index.html" class="nav-btn">Inicio</a>
+            <a href="agenda.html" class="nav-btn">Agenda</a>
+            <a href="detalles.html" class="nav-btn active">Detalles</a>
+            <a href="observaciones.html" class="nav-btn">Observaciones</a>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <h1 class="page-title">Historial Detallado de Citas</h1>
+
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-number" id="totalCitas">24</div>
+                <div class="stat-label">Total Citas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="citasCompletadas">18</div>
+                <div class="stat-label">Completadas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="citasPendientes">3</div>
+                <div class="stat-label">Pendientes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="citasCanceladas">3</div>
+                <div class="stat-label">Canceladas</div>
+            </div>
+        </div>
+
+        <div class="filters-section">
+            <div class="filters-grid">
+                <div class="filter-group">
+                    <label class="filter-label">Fecha Desde</label>
+                    <input type="date" class="filter-input" id="fechaDesde">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Fecha Hasta</label>
+                    <input type="date" class="filter-input" id="fechaHasta">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Paciente</label>
+                    <input type="text" class="filter-input" id="buscarPaciente" placeholder="Nombre del paciente">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Estado</label>
+                    <select class="filter-select" id="filtroEstado">
+                        <option value="">Todos los estados</option>
+                        <option value="confirmada">Confirmada</option>
+                        <option value="completada">Completada</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="cancelada">Cancelada</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button class="filter-btn" onclick="aplicarFiltros()">Filtrar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="details-container">
+            <div class="citas-list">
+                <div id="listaCitas">
+                    <!-- Las citas se cargarán aquí dinámicamente -->
+                </div>
+            </div>
+
+            <div class="detail-panel">
+                <div class="detail-title">Detalles de la Cita</div>
+                <div id="detalleContent">
+                    <div class="empty-state">
+                        <div class="empty-icon">📋</div>
+                        <p>Selecciona una cita para ver sus detalles</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Datos de ejemplo de citas históricas
+        const citasHistoricas = [
+            {
+                id: 1,
+                fecha: '2024-09-22',
+                hora: '8:00 AM',
+                paciente: 'Nicolás Sánchez',
+                telefono: '300-123-4567',
+                email: 'nicolas.sanchez@email.com',
+                motivo: 'Control rutinario',
+                estado: 'confirmada',
+                diagnostico: 'Hipertensión arterial controlada',
+                tratamiento: 'Continuar con medicación actual',
+                proximaCita: '2024-10-22',
+                observaciones: 'Paciente presenta buena evolución. Presión arterial dentro de rangos normales.'
+            },
+            {
+                id: 2,
+                fecha: '2024-09-22',
+                hora: '9:00 AM',
+                paciente: 'Andrea Rodríguez',
+                telefono: '301-234-5678',
+                email: 'andrea.rodriguez@email.com',
+                motivo: 'Primera consulta',
+                estado: 'pendiente',
+                diagnostico: 'Evaluación inicial pendiente',
+                tratamiento: 'Por definir según exámenes',
+                proximaCita: 'Por agendar',
+                observaciones: 'Primera consulta. Solicitar exámenes de laboratorio completos.'
+            },
+            {
+                id: 3,
+                fecha: '2024-09-21',
+                hora: '2:00 PM',
+                paciente: 'Carlos Mendoza',
+                telefono: '302-345-6789',
+                email: 'carlos.mendoza@email.com',
+                motivo: 'Seguimiento diabetes',
+                estado: 'completada',
+                diagnostico: 'Diabetes tipo 2 controlada',
+                tratamiento: 'Metformina 850mg cada 12 horas',
+                proximaCita: '2024-10-21',
+                observaciones: 'Excelente control glucémico. Paciente muy comprometido con el tratamiento.'
+            },
+            {
+                id: 4,
+                fecha: '2024-09-20',
+                hora: '10:30 AM',
+                paciente: 'María González',
+                telefono: '303-456-7890',
+                email: 'maria.gonzalez@email.com',
+                motivo: 'Dolor abdominal',
+                estado: 'completada',
+                diagnostico: 'Gastritis leve',
+                tratamiento: 'Omeprazol 20mg en ayunas',
+                proximaCita: '2024-10-05',
+                observaciones: 'Mejoría significativa. Continuar con tratamiento y dieta.'
+            },
+            {
+                id: 5,
+                fecha: '2024-09-19',
+                hora: '11:00 AM',
+                paciente: 'Luis Herrera',
+                telefono: '304-567-8901',
+                email: 'luis.herrera@email.com',
+                motivo: 'Chequeo general',
+                estado: 'cancelada',
+                diagnostico: 'N/A',
+                tratamiento: 'N/A',
+                proximaCita: 'Reagendar',
+                observaciones: 'Cita cancelada por el paciente. Motivo: viaje de trabajo.'
+            }
+        ];
+
+        let citasFiltradas = [...citasHistoricas];
+        let citaSeleccionada = null;
+
+        function cargarCitas() {
+            const container = document.getElementById('listaCitas');
+            
+            if (citasFiltradas.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">🔍</div>
+                        <p>No se encontraron citas con los filtros aplicados</p>
+                    </div>
+                `;
+                return;
             }
 
-            .modal .form-group input,
-            .modal .form-group textarea,
-            .modal .form-group select {
-                width: 100%;
-                padding: 8px 12px;
-                border: 2px solid #ced4da;
-                border-radius: 4px;
-                font-size: 14px;
+            container.innerHTML = '';
+            
+            citasFiltradas.forEach(cita => {
+                const citaCard = document.createElement('div');
+                citaCard.className = 'cita-card';
+                citaCard.onclick = () => seleccionarCita(cita);
+                
+                citaCard.innerHTML = `
+                    <div class="cita-status status-${cita.estado}">${cita.estado.toUpperCase()}</div>
+                    <div class="cita-header">
+                        <div class="cita-fecha">${formatearFecha(cita.fecha)}</div>
+                        <div class="cita-hora">${cita.hora}</div>
+                    </div>
+                    <div class="cita-paciente">${cita.paciente}</div>
+                    <div class="cita-info">
+                        <div class="info-item">
+                            <div class="info-label">Motivo</div>
+                            <div class="info-value">${cita.motivo}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Teléfono</div>
+                            <div class="info-value">${cita.telefono}</div>
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(citaCard);
+            });
+        }
+
+        function seleccionarCita(cita) {
+            // Remover selección anterior
+            document.querySelectorAll('.cita-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Seleccionar nueva cita
+            event.currentTarget.classList.add('selected');
+            citaSeleccionada = cita;
+            
+            mostrarDetalles(cita);
+        }
+
+        function mostrarDetalles(cita) {
+            const container = document.getElementById('detalleContent');
+            
+            container.innerHTML = `
+                <div class="detail-section">
+                    <div class="section-title">Información del Paciente</div>
+                    <div class="detail-info">
+                        <strong>Nombre:</strong> ${cita.paciente}<br>
+                        <strong>Teléfono:</strong> ${cita.telefono}<br>
+                        <strong>Email:</strong> ${cita.email}<br>
+                        <strong>Fecha de Cita:</strong> ${formatearFecha(cita.fecha)} - ${cita.hora}
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="section-title">Consulta Médica</div>
+                    <div class="detail-info">
+                        <strong>Motivo:</strong> ${cita.motivo}<br>
+                        <strong>Diagnóstico:</strong> ${cita.diagnostico}<br>
+                        <strong>Estado:</strong> <span class="status-badge status-${cita.estado}">${cita.estado.toUpperCase()}</span>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="section-title">Tratamiento</div>
+                    <div class="detail-info">
+                        ${cita.tratamiento}<br>
+                        <strong>Próxima Cita:</strong> ${cita.proximaCita}
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="section-title">Observaciones Médicas</div>
+                    <div class="detail-info">
+                        ${cita.observaciones}
+                    </div>
+                </div>
+
+                <div class="detail-actions">
+                    ${generarAccionesCita(cita)}
+                </div>
+            `;
+        }
+
+        function generarAccionesCita(cita) {
+            let acciones = `
+                <button class="action-btn btn-primary" onclick="imprimirHistorial(${cita.id})">
+                    📄 Imprimir Historial
+                </button>
+                <button class="action-btn btn-secondary" onclick="exportarPDF(${cita.id})">
+                    📑 Exportar PDF
+                </button>
+            `;
+
+            if (cita.estado === 'pendiente') {
+                acciones += `
+                    <button class="action-btn btn-success" onclick="confirmarCita(${cita.id})">
+                        ✓ Confirmar Cita
+                    </button>
+                    <button class="action-btn btn-warning" onclick="reagendarCita(${cita.id})">
+                        📅 Reagendar
+                    </button>
+                    <button class="action-btn btn-danger" onclick="cancelarCita(${cita.id})">
+                        ❌ Cancelar
+                    </button>
+                `;
             }
 
-            .modal .form-group textarea {
-                resize: vertical;
-                min-height: 80px;
+            if (cita.estado === 'confirmada') {
+                acciones += `
+                    <button class="action-btn btn-success" onclick="marcarCompletada(${cita.id})">
+                        ✓ Marcar Completada
+                    </button>
+                    <button class="action-btn btn-warning" onclick="agregarObservaciones(${cita.id})">
+                        📝 Agregar Observaciones
+                    </button>
+                `;
             }
 
-            .navigation-links {
-                text-align: center;
-                margin-top: 30px;
-            }
+            return acciones;
+        }
 
-            .navigation-links .btn {
-                margin: 0 10px;
-                text-decoration: none;
-                display: inline-block;
-            }
+        function formatearFecha(fecha) {
+            const fechaObj = new Date(fecha + 'T00:00:00');
+            return fechaObj.toLocaleDateString('es-ES', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
 
-            @keyframes slideDown {
-                from {
-                    opacity: 0;
-                    transform: translateY(-50px);
+        function aplicarFiltros() {
+            const fechaDesde = document.getElementById('fechaDesde').value;
+            const fechaHasta = document.getElementById('fechaHasta').value;
+            const buscarPaciente = document.getElementById('buscarPaciente').value.toLowerCase();
+            const filtroEstado = document.getElementById('filtroEstado').value;
+
+            citasFiltradas = citasHistoricas.filter(cita => {
+                let cumpleFiltros = true;
+
+                if (fechaDesde && cita.fecha < fechaDesde) {
+                    cumpleFiltros = false;
                 }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
+
+                if (fechaHasta && cita.fecha > fechaHasta) {
+                    cumpleFiltros = false;
+                }
+
+                if (buscarPaciente && !cita.paciente.toLowerCase().includes(buscarPaciente)) {
+                    cumpleFiltros = false;
+                }
+
+                if (filtroEstado && cita.estado !== filtroEstado) {
+                    cumpleFiltros = false;
+                }
+
+                return cumpleFiltros;
+            });
+
+            cargarCitas();
+            actualizarEstadisticas();
+        }
+
+        function actualizarEstadisticas() {
+            const total = citasFiltradas.length;
+            const completadas = citasFiltradas.filter(c => c.estado === 'completada').length;
+            const pendientes = citasFiltradas.filter(c => c.estado === 'pendiente').length;
+            const canceladas = citasFiltradas.filter(c => c.estado === 'cancelada').length;
+
+            document.getElementById('totalCitas').textContent = total;
+            document.getElementById('citasCompletadas').textContent = completadas;
+            document.getElementById('citasPendientes').textContent = pendientes;
+            document.getElementById('citasCanceladas').textContent = canceladas;
+        }
+
+        // Funciones de acción
+        function imprimirHistorial(citaId) {
+            const cita = citasHistoricas.find(c => c.id === citaId);
+            alert(`Imprimiendo historial médico de ${cita.paciente}...`);
+            
+            // Simular impresión
+            setTimeout(() => {
+                alert('Historial enviado a la impresora exitosamente!');
+            }, 1500);
+        }
+
+        function exportarPDF(citaId) {
+            const cita = citasHistoricas.find(c => c.id === citaId);
+            alert(`Generando PDF del historial de ${cita.paciente}...`);
+            
+            // Simular generación de PDF
+            setTimeout(() => {
+                alert('PDF generado y descargado exitosamente!');
+            }, 2000);
+        }
+
+        function confirmarCita(citaId) {
+            const cita = citasHistoricas.find(c => c.id === citaId);
+            if (cita) {
+                cita.estado = 'confirmada';
+                cargarCitas();
+                actualizarEstadisticas();
+                mostrarDetalles(cita);
+                alert(`Cita confirmada para ${cita.paciente}`);
+            }
+        }
+
+        function reagendarCita(citaId) {
+            const cita = citasHistoricas.find(c => c.id === citaId);
+            const nuevaFecha = prompt('Ingrese la nueva fecha (YYYY-MM-DD):');
+            const nuevaHora = prompt('Ingrese la nueva hora (HH:MM AM/PM):');
+            
+            if (nuevaFecha && nuevaHora && cita) {
+                cita.fecha = nuevaFecha;
+                cita.hora = nuevaHora;
+                cita.estado = 'confirmada';
+                cargarCitas();
+                actualizarEstadisticas();
+                mostrarDetalles(cita);
+                alert(`Cita reagendada para ${cita.paciente} - ${nuevaFecha} a las ${nuevaHora}`);
+            }
+        }
+
+        function cancelarCita(citaId) {
+            if (confirm('¿Está seguro que desea cancelar esta cita?')) {
+                const cita = citasHistoricas.find(c => c.id === citaId);
+                if (cita) {
+                    cita.estado = 'cancelada';
+                    cita.observaciones += '\n\nCita cancelada el ' + new Date().toLocaleDateString();
+                    cargarCitas();
+                    actualizarEstadisticas();
+                    mostrarDetalles(cita);
+                    alert(`Cita cancelada para ${cita.paciente}`);
                 }
             }
+        }
 
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
+        function marcarCompletada(citaId) {
+            const cita = citasHistoricas.find(c => c.id === citaId);
+            if (cita) {
+                cita.estado = 'completada';
+                cargarCitas();
+                actualizarEstadisticas();
+                mostrarDetalles(cita);
+                alert(`Cita marcada como completada para ${cita.paciente}`);
             }
+        }
 
-            @keyframes slideInRight {
-                from {
-                    opacity: 0;
-                    transform: translateX(100%);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateX(0);
-                }
+        function agregarObservaciones(citaId) {
+            const cita = citasHistoricas.find(c => c.id === citaId);
+            const nuevasObservaciones = prompt('Ingrese las nuevas observaciones:', cita.observaciones);
+            
+            if (nuevasObservaciones !== null && cita) {
+                cita.observaciones = nuevasObservaciones;
+                mostrarDetalles(cita);
+                alert('Observaciones actualizadas exitosamente');
             }
+        }
 
-            @keyframes slideOutRight {
-                from {
-                    opacity: 1;
-                    transform: translateX(0);
-                }
-                to {
-                    opacity: 0;
-                    transform: translateX(100%);
-                }
-            }
+        // Función de búsqueda en tiempo real
+        document.getElementById('buscarPaciente').addEventListener('input', function() {
+            aplicarFiltros();
+        });
 
-            @media (max-width: 768px) {
-                .modal-content {
-                    width: 95%;
-                    margin: 10% auto;
-                }
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            // Establecer fechas por defecto
+            const hoy = new Date();
+            const hace30dias = new Date();
+            hace30dias.setDate(hace30dias.getDate() - 30);
+            
+            document.getElementById('fechaDesde').value = hace30dias.toISOString().split('T')[0];
+            document.getElementById('fechaHasta').value = hoy.toISOString().split('T')[0];
+            
+            // Cargar datos iniciales
+            cargarCitas();
+            actualizarEstadisticas();
+            
+            // Animación de entrada para las tarjetas
+            setTimeout(() => {
+                const cards = document.querySelectorAll('.cita-card');
+                cards.forEach((card, index) => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        card.style.transition = 'all 0.4s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+            }, 100);
+        });
 
-                .info-grid {
-                    grid-template-columns: 1fr;
-                }
+        // Función para limpiar filtros
+        function limpiarFiltros() {
+            document.getElementById('fechaDesde').value = '';
+            document.getElementById('fechaHasta').value = '';
+            document.getElementById('buscarPaciente').value = '';
+            document.getElementById('filtroEstado').value = '';
+            
+            citasFiltradas = [...citasHistoricas];
+            cargarCitas();
+            actualizarEstadisticas();
+        }
 
-                .button-row {
-                    flex-direction: column;
-                    gap: 10px;
-                }
-
-                .button-row .btn {
-                    margin: 0;
-                }
-            }
-        `;
-        document.head.appendChild(additionalStyles);
+        // Agregar botón de limpiar filtros
+        document.addEventListener('DOMContentLoaded', function() {
+            const filtersGrid = document.querySelector('.filters-grid');
+            const clearButton = document.createElement('div');
+            clearButton.className = 'filter-group';
+            clearButton.innerHTML = `
+                <button class="filter-btn" onclick="limpiarFiltros()" style="background: #6c757d;">
+                    Limpiar Filtros
+                </button>
+            `;
+            filtersGrid.appendChild(clearButton);
+        });
     </script>
 </body>
 </html>

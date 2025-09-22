@@ -3,752 +3,988 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrar Observaciones - Sistema de Citas Médicas</title>
-    <link rel="stylesheet" href="../css/styles.css">
-    <link rel="stylesheet" href="../css/wireframes.css">
+    <title>Observaciones Médicas - ZenMediClick</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ff6b6b, #4ecdc4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            font-size: 14px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .nav-btn.active {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .main-content {
+            padding: 40px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 300;
+            margin-bottom: 30px;
+            text-align: center;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .observations-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 30px;
+        }
+
+        .observations-list {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .observations-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .add-observation-btn {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .add-observation-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(40, 167, 69, 0.4);
+        }
+
+        .observation-card {
+            background: linear-gradient(135deg, #f8f9ff, #ffffff);
+            border: 1px solid #e8ecf4;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .observation-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            border-color: #667eea;
+        }
+
+        .observation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .patient-info {
+            flex: 1;
+        }
+
+        .patient-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .observation-date {
+            font-size: 14px;
+            color: #666;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .observation-type {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .type-seguimiento {
+            background: #cce5ff;
+            color: #004085;
+        }
+
+        .type-primera-vez {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .type-urgente {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .type-control {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .observation-content {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .observation-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit {
+            background: #007bff;
+            color: white;
+        }
+
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-print {
+            background: #6c757d;
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .observation-form {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 20px;
+            height: fit-content;
+        }
+
+        .form-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            color: #333;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            min-height: 120px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+            font-family: inherit;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .cancel-btn {
+            width: 100%;
+            padding: 12px;
+            background: #6c757d;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .cancel-btn:hover {
+            background: #5a6268;
+        }
+
+        .search-bar {
+            margin-bottom: 25px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 16px;
+            background: white;
+        }
+
+        .search-container {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #666;
+            font-size: 18px;
+        }
+
+        .filter-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filter-tab {
+            padding: 8px 16px;
+            background: #e9ecef;
+            color: #495057;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab.active {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .filter-tab:hover {
+            transform: translateY(-1px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            color: #333;
+            padding: 20px 15px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 28px;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        @media (max-width: 1024px) {
+            .observations-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .observation-form {
+                position: static;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .main-content {
+                padding: 20px;
+            }
+
+            .observations-header {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .stats-summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .filter-tabs {
+                justify-content: center;
+            }
+        }
+    </style>
 </head>
 <body>
-    <div class="header">
-        <div class="breadcrumb">
-            <a href="agenda.html">← Volver a Agenda</a>
-            <span>/ Registrar Observaciones</span>
+    <header class="header">
+        <div class="logo">
+            <div class="logo-icon">🏥</div>
+            <span>ZenMediClick</span>
         </div>
-        <div class="auto-save-indicator" id="autoSaveIndicator" style="display: none;">
-            💾 Guardado automático activado
+        <div class="nav-buttons">
+            <a href="index.html" class="nav-btn">Inicio</a>
+            <a href="agenda.html" class="nav-btn">Agenda</a>
+            <a href="detalles.html" class="nav-btn">Detalles</a>
+            <a href="observaciones.html" class="nav-btn active">Observaciones</a>
         </div>
-    </div>
+    </header>
 
-    <div class="container">
-        <div class="wireframe active">
-            <div class="wireframe-title">Registrar Observaciones Médicas</div>
-            <div class="screen">
-                <div class="title-bar">Registrar observaciones</div>
-                
-                <div class="patient-info" id="patientInfo">
-                    <!-- La información del paciente se cargará dinámicamente -->
+    <main class="main-content">
+        <h1 class="page-title">Observaciones Médicas</h1>
+
+        <div class="stats-summary">
+            <div class="stat-card">
+                <div class="stat-number" id="totalObservations">12</div>
+                <div class="stat-label">Total</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="todayObservations">3</div>
+                <div class="stat-label">Hoy</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="urgentObservations">1</div>
+                <div class="stat-label">Urgentes</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="followUpObservations">8</div>
+                <div class="stat-label">Seguimiento</div>
+            </div>
+        </div>
+
+        <div class="observations-layout">
+            <div class="observations-list">
+                <div class="observations-header">
+                    <h2 class="section-title">Registro de Observaciones</h2>
+                    <button class="add-observation-btn" onclick="mostrarFormulario()">
+                        <span>➕</span>
+                        Nueva Observación
+                    </button>
                 </div>
 
-                <div class="observations-section">
-                    <div class="section-header">
-                        <label for="medicalObservations"><strong>Observaciones médicas</strong></label>
-                        <div class="tools">
-                            <button class="btn-small" onclick="insertTemplate('examination')">Plantilla Examen</button>
-                            <button class="btn-small" onclick="insertTemplate('diagnosis')">Plantilla Diagnóstico</button>
-                            <button class="btn-small" onclick="clearText()">Limpiar</button>
-                        </div>
+                <div class="search-bar">
+                    <div class="search-container">
+                        <input type="text" class="search-input" id="searchInput" placeholder="Buscar por paciente o contenido...">
+                        <span class="search-icon">🔍</span>
                     </div>
+                </div>
+
+                <div class="filter-tabs">
+                    <button class="filter-tab active" onclick="filtrarPorTipo('')">Todas</button>
+                    <button class="filter-tab" onclick="filtrarPorTipo('seguimiento')">Seguimiento</button>
+                    <button class="filter-tab" onclick="filtrarPorTipo('primera-vez')">Primera Vez</button>
+                    <button class="filter-tab" onclick="filtrarPorTipo('urgente')">Urgente</button>
+                    <button class="filter-tab" onclick="filtrarPorTipo('control')">Control</button>
+                </div>
+
+                <div id="observationsList">
+                    <!-- Las observaciones se cargarán aquí -->
+                </div>
+            </div>
+
+            <div class="observation-form" id="observationForm" style="display: none;">
+                <h3 class="form-title">Nueva Observación</h3>
+                <form id="newObservationForm">
+                    <div class="form-group">
+                        <label class="form-label">Paciente</label>
+                        <input type="text" class="form-input" id="patientName" placeholder="Nombre del paciente" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Tipo de Observación</label>
+                        <select class="form-select" id="observationType" required>
+                            <option value="">Seleccionar tipo</option>
+                            <option value="seguimiento">Seguimiento</option>
+                            <option value="primera-vez">Primera Vez</option>
+                            <option value="urgente">Urgente</option>
+                            <option value="control">Control</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Observación Médica</label>
+                        <textarea class="form-textarea" id="observationContent" placeholder="Descripción detallada de la observación médica..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Fecha</label>
+                        <input type="date" class="form-input" id="observationDate" required>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Guardar Observación</button>
+                    <button type="button" class="cancel-btn" onclick="ocultarFormulario()">Cancelar</button>
+                </form>
+            </div>
+
+            <div class="observation-form" id="defaultPanel">
+                <h3 class="form-title">Panel de Control</h3>
+                <div style="text-align: center; padding: 20px;">
+                    <div style="font-size: 48px; margin-bottom: 15px;">📋</div>
+                    <p style="color: #666; margin-bottom: 25px;">Gestiona las observaciones médicas de tus pacientes</p>
                     
-                    <div class="textarea-container">
-                        <textarea 
-                            class="textarea" 
-                            id="medicalObservations" 
-                            placeholder="Escriba sus observaciones médicas aquí..."
-                            maxlength="2000">
-                        </textarea>
-                        <div class="textarea-lines">
-                            ___________________________<br>
-                            ___________________________<br>
-                            ___________________________
-                        </div>
-                        <div class="char-counter">
-                            <span id="charCount">0</span>/2000 caracteres
-                        </div>
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <button class="submit-btn" onclick="mostrarFormulario()">
+                            ➕ Nueva Observación
+                        </button>
+                        
+                        <button class="submit-btn" style="background: #17a2b8;" onclick="exportarObservaciones()">
+                            📊 Exportar Reporte
+                        </button>
+                        
+                        <button class="submit-btn" style="background: #28a745;" onclick="configurarNotificaciones()">
+                            🔔 Configurar Notificaciones
+                        </button>
                     </div>
                 </div>
-
-                <div class="prescription-section">
-                    <h4>Receta Médica</h4>
-                    <textarea 
-                        id="prescription" 
-                        placeholder="Medicamentos recetados, dosis, frecuencia..."
-                        rows="4">
-                    </textarea>
-                </div>
-
-                <div class="follow-up-section">
-                    <h4>Seguimiento</h4>
-                    <div class="follow-up-options">
-                        <label>
-                            <input type="checkbox" id="followUpRequired"> 
-                            Requiere seguimiento
-                        </label>
-                        <div class="follow-up-details" id="followUpDetails" style="display: none;">
-                            <label for="followUpDate">Fecha de seguimiento:</label>
-                            <input type="date" id="followUpDate">
-                            <label for="followUpNotes">Notas de seguimiento:</label>
-                            <textarea id="followUpNotes" rows="2"></textarea>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="actions-section">
-                    <div class="button-row">
-                        <button class="btn btn-primary" onclick="saveObservations()">Guardar</button>
-                        <button class="btn" onclick="saveDraft()">Guardar Borrador</button>
-                        <button class="btn" onclick="cancelObservations()">Cancelar</button>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="zen-text">Z E N</div>
-            <div class="logo">🪷</div>
-            <div class="zen-text-bottom">M E D I C L I C K</div>
-        </div>
-    </div>
-
-    <div class="navigation-links">
-        <a href="../index.html" class="btn">Wireframes Completos</a>
-        <a href="agenda.html" class="btn">Volver a Agenda</a>
-        <a href="detalles.html" class="btn">Ver Detalles</a>
-    </div>
-
-    <!-- Modal de confirmación -->
-    <div id="confirmModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Confirmar Acción</h3>
-            </div>
-            <div class="modal-body">
-                <p id="confirmMessage"></p>
-            </div>
-            <div class="modal-footer">
-                <button class="btn btn-primary" id="confirmBtn">Confirmar</button>
-                <button class="btn" onclick="closeConfirmModal()">Cancelar</button>
             </div>
         </div>
-    </div>
+    </main>
 
     <script>
-        let currentAppointment = null;
-        let autoSaveTimer = null;
-        let hasUnsavedChanges = false;
-
-        // Plantillas predefinidas
-        const templates = {
-            examination: `EXAMEN FÍSICO:
-- Signos vitales: 
-- Inspección general: 
-- Sistemas: 
-
-HALLAZGOS:
-- `,
-            diagnosis: `DIAGNÓSTICO:
-- Diagnóstico principal: 
-- Diagnósticos secundarios: 
-
-PLAN DE TRATAMIENTO:
-- 
-- 
-
-INDICACIONES:
-- `
-        };
-
-        // Verificar autenticación y cargar datos
-        function checkAuthAndLoadData() {
-            if (sessionStorage.getItem('userLoggedIn') !== 'true') {
-                alert('Debe iniciar sesión primero');
-                window.location.href = 'login.html';
-                return false;
-            }
-
-            const appointmentData = sessionStorage.getItem('selectedAppointment');
-            if (!appointmentData) {
-                alert('No hay cita seleccionada');
-                window.location.href = 'agenda.html';
-                return false;
-            }
-
-            currentAppointment = JSON.parse(appointmentData);
-            loadPatientInfo();
-            loadExistingObservations();
-            setupAutoSave();
-            return true;
-        }
-
-        // Cargar información del paciente
-        function loadPatientInfo() {
-            if (!currentAppointment) return;
-
-            const patientInfoContainer = document.getElementById('patientInfo');
-            patientInfoContainer.innerHTML = `
-                <div class="info-row">
-                    <div><strong>Paciente: <span class="info-value">${currentAppointment.patient}</span></strong></div>
-                    <div><strong>ID Cita: <span class="info-value">#${currentAppointment.id}</span></strong></div>
-                </div>
-                <div class="info-row">
-                    <div><strong>Fecha: <span class="info-value">${currentAppointment.date}</span></strong></div>
-                    <div><strong>Hora: <span class="info-value">${currentAppointment.time}</span></strong></div>
-                </div>
-                <div class="info-row">
-                    <div><strong>Motivo: <span class="info-value">${currentAppointment.reason}</span></strong></div>
-                </div>
-            `;
-        }
-
-        // Cargar observaciones existentes (simulación)
-        function loadExistingObservations() {
-            const savedObservations = localStorage.getItem(`observations_${currentAppointment.id}`);
-            const savedPrescription = localStorage.getItem(`prescription_${currentAppointment.id}`);
+        // Datos de observaciones médicas
+        let observaciones = [
+            {
+                id: 1,
+                paciente: 'Nicolás Sánchez',
+                fecha: '2024-09-22',
+                hora: '8:30 AM',
+                tipo: 'seguimiento',
+                observacion: 'Paciente presenta mejoría significativa en dolor abdominal. Presión arterial estable en 120/80. Se recomienda continuar con tratamiento actual y control en 2 semanas.',
+                estado: 'activa'
+            },
+            {
+                id: 2,
+                paciente: 'Andrea Rodríguez',
+                fecha: '2024-09-22',
+                hora: '9:15 AM',
+                tipo: 'primera-vez',
+                observacion: 'Primera consulta por síntomas de hipertensión. Antecedentes familiares positivos. Se solicita perfil lipídico, glucemia y electrocardiograma. Iniciar con cambios en estilo de vida.',
+                estado: 'activa'
+            },
+            {
+                id: 3,
+                paciente: 'Carlos Mendoza',
+                fecha: '2024-09-21',
+                hora: '2:30 PM',
+                tipo: 'control',
+                observacion: 'Control de diabetes tipo 2. HbA1c en 6.8%, excelente control glucémico. Paciente muy comprometido con dieta y ejercicio. Continuar con metformina.',
+                estado: 'activa'
+            },
+            {
+                id: 4,
+                paciente: 'María González',
+                fecha: '2024-09-20',
+                hora: '11:00 AM',
+                tipo: 'seguimiento',
+                observacion: 'Seguimiento por gastritis. Paciente refiere mejoría del 80% en síntomas después del tratamiento con omeprazol. Continuar tratamiento por 2 semanas más.',
+                estado: 'activa'
+            },
             
-            if (savedObservations) {
-                document.getElementById('medicalObservations').value = savedObservations;
-                updateCharCount();
+            {
+                id: 5,
+                paciente: 'Luis Herrera',
+                fecha: '2024-09-19',
+                hora: '11:30 AM',
+                tipo: 'urgente',
+                observacion: 'Paciente consulta por dolor torácico de 2 horas de evolución. ECG normal, troponinas negativas. Dolor de origen muscular. Se indica analgésicos y reposo. Control en 24 horas.',
+                estado: 'activa'
+            },
+            {
+                id: 6,
+                paciente: 'Ana Martínez',
+                fecha: '2024-09-18',
+                hora: '3:00 PM',
+                tipo: 'control',
+                observacion: 'Control post-operatorio. Herida quirúrgica en buen estado, sin signos de infección. Retirar puntos en próxima cita. Paciente evoluciona favorablemente.',
+                estado: 'archivada'
             }
-            
-            if (savedPrescription) {
-                document.getElementById('prescription').value = savedPrescription;
-            }
-        }
+        ];
 
-        // Configurar auto-guardado
-        function setupAutoSave() {
-            const textarea = document.getElementById('medicalObservations');
-            const prescription = document.getElementById('prescription');
-            
-            [textarea, prescription].forEach(element => {
-                element.addEventListener('input', function() {
-                    hasUnsavedChanges = true;
-                    clearTimeout(autoSaveTimer);
-                    autoSaveTimer = setTimeout(autoSave, 30000); // Auto-guardar cada 30 segundos
-                });
-            });
+        let observacionesFiltradas = [...observaciones];
+        let editandoObservacion = null;
 
-            // Mostrar indicador de auto-guardado
-            document.getElementById('autoSaveIndicator').style.display = 'block';
-        }
-
-        // Auto-guardado
-        function autoSave() {
-            const observations = document.getElementById('medicalObservations').value;
-            const prescription = document.getElementById('prescription').value;
+        function cargarObservaciones() {
+            const container = document.getElementById('observationsList');
             
-            if (observations.trim() || prescription.trim()) {
-                localStorage.setItem(`observations_${currentAppointment.id}`, observations);
-                localStorage.setItem(`prescription_${currentAppointment.id}`, prescription);
-                
-                showMessage('Borrador guardado automáticamente', 'info');
-                hasUnsavedChanges = false;
-            }
-        }
-
-        // Insertar plantilla
-        function insertTemplate(templateType) {
-            const textarea = document.getElementById('medicalObservations');
-            const template = templates[templateType];
-            
-            if (template) {
-                const currentValue = textarea.value;
-                const newValue = currentValue ? currentValue + '\n\n' + template : template;
-                
-                if (newValue.length <= 2000) {
-                    textarea.value = newValue;
-                    updateCharCount();
-                    hasUnsavedChanges = true;
-                    textarea.focus();
-                } else {
-                    showMessage('La plantilla excede el límite de caracteres', 'error');
-                }
-            }
-        }
-
-        // Limpiar texto
-        function clearText() {
-            if (document.getElementById('medicalObservations').value.trim()) {
-                showConfirmModal(
-                    '¿Está seguro de que desea limpiar todo el texto?',
-                    function() {
-                        document.getElementById('medicalObservations').value = '';
-                        updateCharCount();
-                        hasUnsavedChanges = true;
-                        closeConfirmModal();
-                    }
-                );
-            }
-        }
-
-        // Actualizar contador de caracteres
-        function updateCharCount() {
-            const textarea = document.getElementById('medicalObservations');
-            const charCount = document.getElementById('charCount');
-            const currentLength = textarea.value.length;
-            
-            charCount.textContent = currentLength;
-            
-            // Cambiar color según proximidad al límite
-            if (currentLength > 1800) {
-                charCount.style.color = '#dc3545';
-            } else if (currentLength > 1500) {
-                charCount.style.color = '#fd7e14';
-            } else {
-                charCount.style.color = '#6c757d';
-            }
-        }
-
-        // Guardar observaciones
-        function saveObservations() {
-            const observations = document.getElementById('medicalObservations').value.trim();
-            const prescription = document.getElementById('prescription').value.trim();
-            
-            if (!observations && !prescription) {
-                showMessage('Por favor ingrese al menos observaciones o receta médica', 'error');
+            if (observacionesFiltradas.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <p>No se encontraron observaciones</p>
+                    </div>
+                `;
                 return;
             }
 
-            // Crear objeto de observación completa
-            const observationData = {
-                appointmentId: currentAppointment.id,
-                patient: currentAppointment.patient,
-                date: currentAppointment.date,
-                time: currentAppointment.time,
-                observations: observations,
-                prescription: prescription,
-                followUp: {
-                    required: document.getElementById('followUpRequired').checked,
-                    date: document.getElementById('followUpDate').value,
-                    notes: document.getElementById('followUpNotes').value
-                },
-                savedAt: new Date().toISOString(),
-                doctor: sessionStorage.getItem('currentUser') || 'Dr. Médico'
-            };
+            container.innerHTML = '';
+            
+            observacionesFiltradas.forEach(obs => {
+                const obsCard = document.createElement('div');
+                obsCard.className = 'observation-card';
+                
+                obsCard.innerHTML = `
+                    <div class="observation-header">
+                        <div class="patient-info">
+                            <div class="patient-name">${obs.paciente}</div>
+                            <div class="observation-date">
+                                📅 ${formatearFecha(obs.fecha)} - ${obs.hora}
+                            </div>
+                        </div>
+                        <div class="observation-type type-${obs.tipo}">
+                            ${obs.tipo.replace('-', ' ')}
+                        </div>
+                    </div>
+                    
+                    <div class="observation-content">
+                        ${obs.observacion}
+                    </div>
+                    
+                    <div class="observation-actions">
+                        <button class="action-btn btn-edit" onclick="editarObservacion(${obs.id})">
+                            ✏️ Editar
+                        </button>
+                        <button class="action-btn btn-print" onclick="imprimirObservacion(${obs.id})">
+                            🖨️ Imprimir
+                        </button>
+                        <button class="action-btn btn-delete" onclick="eliminarObservacion(${obs.id})">
+                            🗑️ Eliminar
+                        </button>
+                    </div>
+                `;
+                
+                container.appendChild(obsCard);
+            });
+        }
 
-            // Simular guardado en servidor
-            localStorage.setItem(`final_observations_${currentAppointment.id}`, JSON.stringify(observationData));
+        function formatearFecha(fecha) {
+            const fechaObj = new Date(fecha + 'T00:00:00');
+            return fechaObj.toLocaleDateString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric'
+            });
+        }
+
+        function mostrarFormulario() {
+            document.getElementById('defaultPanel').style.display = 'none';
+            document.getElementById('observationForm').style.display = 'block';
             
-            // Limpiar auto-guardado
-            localStorage.removeItem(`observations_${currentAppointment.id}`);
-            localStorage.removeItem(`prescription_${currentAppointment.id}`);
+            // Establecer fecha actual
+            const hoy = new Date().toISOString().split('T')[0];
+            document.getElementById('observationDate').value = hoy;
             
-            hasUnsavedChanges = false;
-            showMessage('Observaciones guardadas exitosamente', 'success');
+            // Limpiar formulario si no estamos editando
+            if (!editandoObservacion) {
+                document.getElementById('newObservationForm').reset();
+                document.querySelector('.form-title').textContent = 'Nueva Observación';
+            }
+        }
+
+        function ocultarFormulario() {
+            document.getElementById('observationForm').style.display = 'none';
+            document.getElementById('defaultPanel').style.display = 'block';
+            editandoObservacion = null;
+            document.getElementById('newObservationForm').reset();
+        }
+
+        function filtrarPorTipo(tipo) {
+            // Actualizar tabs activos
+            document.querySelectorAll('.filter-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
             
+            // Filtrar observaciones
+            if (tipo === '') {
+                observacionesFiltradas = [...observaciones];
+            } else {
+                observacionesFiltradas = observaciones.filter(obs => obs.tipo === tipo);
+            }
+            
+            cargarObservaciones();
+        }
+
+        function buscarObservaciones() {
+            const termino = document.getElementById('searchInput').value.toLowerCase();
+            
+            observacionesFiltradas = observaciones.filter(obs => 
+                obs.paciente.toLowerCase().includes(termino) ||
+                obs.observacion.toLowerCase().includes(termino)
+            );
+            
+            cargarObservaciones();
+        }
+
+        function editarObservacion(id) {
+            const obs = observaciones.find(o => o.id === id);
+            if (obs) {
+                editandoObservacion = obs;
+                
+                // Llenar formulario con datos existentes
+                document.getElementById('patientName').value = obs.paciente;
+                document.getElementById('observationType').value = obs.tipo;
+                document.getElementById('observationContent').value = obs.observacion;
+                document.getElementById('observationDate').value = obs.fecha;
+                
+                document.querySelector('.form-title').textContent = 'Editar Observación';
+                mostrarFormulario();
+            }
+        }
+
+        function eliminarObservacion(id) {
+            if (confirm('¿Está seguro que desea eliminar esta observación?')) {
+                observaciones = observaciones.filter(obs => obs.id !== id);
+                observacionesFiltradas = observacionesFiltradas.filter(obs => obs.id !== id);
+                cargarObservaciones();
+                actualizarEstadisticas();
+                alert('Observación eliminada exitosamente');
+            }
+        }
+
+        function imprimirObservacion(id) {
+            const obs = observaciones.find(o => o.id === id);
+            if (obs) {
+                alert(`Imprimiendo observación de ${obs.paciente}...`);
+                // Simular impresión
+                setTimeout(() => {
+                    alert('Observación enviada a la impresora!');
+                }, 1500);
+            }
+        }
+
+        function actualizarEstadisticas() {
+            const total = observaciones.length;
+            const hoy = new Date().toISOString().split('T')[0];
+            const obsHoy = observaciones.filter(obs => obs.fecha === hoy).length;
+            const urgentes = observaciones.filter(obs => obs.tipo === 'urgente').length;
+            const seguimiento = observaciones.filter(obs => obs.tipo === 'seguimiento').length;
+            
+            document.getElementById('totalObservations').textContent = total;
+            document.getElementById('todayObservations').textContent = obsHoy;
+            document.getElementById('urgentObservations').textContent = urgentes;
+            document.getElementById('followUpObservations').textContent = seguimiento;
+        }
+
+        function exportarObservaciones() {
+            alert('Generando reporte de observaciones...');
             setTimeout(() => {
-                window.location.href = 'agenda.html';
+                alert('Reporte exportado exitosamente en formato PDF!');
             }, 2000);
         }
 
-        // Guardar borrador
-        function saveDraft() {
-            autoSave();
-            showMessage('Borrador guardado correctamente', 'success');
-        }
+        function configurarNotificaciones() {
+            const configuraciones = `
+Configuración de Notificaciones:
 
-        // Cancelar observaciones
-        function cancelObservations() {
-            if (hasUnsavedChanges) {
-                showConfirmModal(
-                    '¿Está seguro de que desea cancelar? Se perderán los cambios no guardados.',
-                    function() {
-                        closeConfirmModal();
-                        window.location.href = 'agenda.html';
-                    }
-                );
-            } else {
-                window.location.href = 'agenda.html';
-            }
-        }
+🔔 Recordatorios automáticos: Activado
+📱 SMS a pacientes: Activado  
+📧 Email de seguimiento: Activado
+⏰ Notificaciones urgentes: Inmediatas
+📊 Reporte semanal: Lunes 9:00 AM
 
-        // Modal de confirmación
-        function showConfirmModal(message, confirmCallback) {
-            document.getElementById('confirmMessage').textContent = message;
-            document.getElementById('confirmBtn').onclick = confirmCallback;
-            document.getElementById('confirmModal').style.display = 'block';
-        }
-
-        function closeConfirmModal() {
-            document.getElementById('confirmModal').style.display = 'none';
-        }
-
-        // Mostrar mensaje
-        function showMessage(message, type) {
-            const existingMessage = document.querySelector('.message');
-            if (existingMessage) {
-                existingMessage.remove();
-            }
-
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${type}`;
-            messageDiv.textContent = message;
+¿Desea modificar alguna configuración?
+            `.trim();
             
-            messageDiv.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                padding: 15px 25px;
-                border-radius: 5px;
-                z-index: 1001;
-                font-weight: bold;
-                min-width: 250px;
-                text-align: center;
-                animation: slideInRight 0.3s ease;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            `;
-
-            switch (type) {
-                case 'success':
-                    messageDiv.style.background = '#d4edda';
-                    messageDiv.style.color = '#155724';
-                    messageDiv.style.border = '1px solid #c3e6cb';
-                    break;
-                case 'error':
-                    messageDiv.style.background = '#f8d7da';
-                    messageDiv.style.color = '#721c24';
-                    messageDiv.style.border = '1px solid #f5c6cb';
-                    break;
-                case 'info':
-                    messageDiv.style.background = '#cce7ff';
-                    messageDiv.style.color = '#004085';
-                    messageDiv.style.border = '1px solid #99d5ff';
-                    break;
-            }
-
-            document.body.appendChild(messageDiv);
-
-            setTimeout(() => {
-                messageDiv.style.animation = 'slideOutRight 0.3s ease forwards';
-                setTimeout(() => {
-                    if (messageDiv.parentNode) {
-                        messageDiv.parentNode.removeChild(messageDiv);
-                    }
-                }, 300);
-            }, 4000);
+            alert(configuraciones);
         }
 
-        // Event listeners
-        document.addEventListener('DOMContentLoaded', function() {
-            if (!checkAuthAndLoadData()) return;
+        // Event Listeners
+        document.getElementById('searchInput').addEventListener('input', buscarObservaciones);
 
-            // Contador de caracteres
-            document.getElementById('medicalObservations').addEventListener('input', updateCharCount);
-            updateCharCount();
-
-            // Seguimiento
-            document.getElementById('followUpRequired').addEventListener('change', function() {
-                const details = document.getElementById('followUpDetails');
-                details.style.display = this.checked ? 'block' : 'none';
-            });
-
-            // Prevenir cierre accidental
-            window.addEventListener('beforeunload', function(e) {
-                if (hasUnsavedChanges) {
-                    e.preventDefault();
-                    e.returnValue = '';
-                }
-            });
-
-            // Cerrar modal al hacer clic fuera
-            window.onclick = function(event) {
-                const modal = document.getElementById('confirmModal');
-                if (event.target === modal) {
-                    closeConfirmModal();
-                }
+        document.getElementById('newObservationForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const nuevaObservacion = {
+                paciente: document.getElementById('patientName').value,
+                tipo: document.getElementById('observationType').value,
+                observacion: document.getElementById('observationContent').value,
+                fecha: document.getElementById('observationDate').value,
+                hora: new Date().toLocaleTimeString('es-ES', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: true 
+                }),
+                estado: 'activa'
             };
-
-            // Focus en textarea
-            document.getElementById('medicalObservations').focus();
+            
+            if (editandoObservacion) {
+                // Actualizar observación existente
+                const index = observaciones.findIndex(obs => obs.id === editandoObservacion.id);
+                if (index !== -1) {
+                    observaciones[index] = { ...nuevaObservacion, id: editandoObservacion.id };
+                }
+                alert('Observación actualizada exitosamente');
+            } else {
+                // Crear nueva observación
+                nuevaObservacion.id = Date.now();
+                observaciones.unshift(nuevaObservacion);
+                alert('Observación guardada exitosamente');
+            }
+            
+            // Actualizar vistas
+            observacionesFiltradas = [...observaciones];
+            cargarObservaciones();
+            actualizarEstadisticas();
+            ocultarFormulario();
         });
 
-        // Estilos adicionales
-        const additionalStyles = document.createElement('style');
-        additionalStyles.textContent = `
-            .header {
-                background: white;
-                padding: 15px 20px;
-                margin-bottom: 20px;
-                border-radius: 8px;
-                box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
+        // Funciones adicionales
+        function archivarObservacion(id) {
+            const obs = observaciones.find(o => o.id === id);
+            if (obs) {
+                obs.estado = 'archivada';
+                alert(`Observación de ${obs.paciente} archivada`);
+                cargarObservaciones();
             }
+        }
 
-            .breadcrumb a {
-                color: #4a90e2;
-                text-decoration: none;
-                font-weight: bold;
+        function duplicarObservacion(id) {
+            const obs = observaciones.find(o => o.id === id);
+            if (obs) {
+                const nuevaObs = {
+                    ...obs,
+                    id: Date.now(),
+                    fecha: new Date().toISOString().split('T')[0],
+                    hora: new Date().toLocaleTimeString('es-ES', { 
+                        hour: '2-digit', 
+                        minute: '2-digit',
+                        hour12: true 
+                    })
+                };
+                observaciones.unshift(nuevaObs);
+                observacionesFiltradas = [...observaciones];
+                cargarObservaciones();
+                actualizarEstadisticas();
+                alert('Observación duplicada exitosamente');
             }
+        }
 
-            .breadcrumb a:hover {
-                text-decoration: underline;
+        // Atajos de teclado
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey && e.key === 'n') {
+                e.preventDefault();
+                mostrarFormulario();
             }
-
-            .auto-save-indicator {
-                color: #28a745;
-                font-size: 14px;
-                font-weight: bold;
+            
+            if (e.key === 'Escape') {
+                ocultarFormulario();
             }
+        });
 
-            .patient-info {
-                background: #f8f9fa;
-                padding: 15px;
-                margin-bottom: 20px;
-                border-radius: 8px;
-                border: 1px solid #dee2e6;
+        // Inicialización
+        document.addEventListener('DOMContentLoaded', function() {
+            cargarObservaciones();
+            actualizarEstadisticas();
+            
+            // Animación de entrada
+            setTimeout(() => {
+                const cards = document.querySelectorAll('.observation-card');
+                cards.forEach((card, index) => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        card.style.transition = 'all 0.4s ease';
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, index * 100);
+                });
+            }, 100);
+        });
+
+        // Auto-guardado (opcional)
+        let autoSaveInterval;
+        
+        function iniciarAutoGuardado() {
+            autoSaveInterval = setInterval(() => {
+                // Simular guardado automático en el servidor
+                console.log('Auto-guardado realizado...');
+            }, 30000); // Cada 30 segundos
+        }
+
+        function detenerAutoGuardado() {
+            if (autoSaveInterval) {
+                clearInterval(autoSaveInterval);
             }
+        }
 
-            .info-row {
-                display: flex;
-                justify-content: space-between;
-                margin-bottom: 8px;
-                flex-wrap: wrap;
-            }
-
-            .info-row:last-child {
-                margin-bottom: 0;
-            }
-
-            .info-value {
-                color: #495057;
-                font-weight: normal;
-            }
-
-            .observations-section {
-                margin-bottom: 25px;
-            }
-
-            .section-header {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 10px;
-                flex-wrap: wrap;
-            }
-
-            .tools {
-                display: flex;
-                gap: 5px;
-                flex-wrap: wrap;
-            }
-
-            .btn-small {
-                padding: 4px 8px;
-                font-size: 11px;
-                border: 1px solid #6c757d;
-                background: white;
-                cursor: pointer;
-                border-radius: 3px;
-                margin: 2px;
-            }
-
-            .btn-small:hover {
-                background: #f8f9fa;
-            }
-
-            .textarea-container {
-                position: relative;
-            }
-
-            .textarea {
-                background: rgba(255, 255, 255, 0.9);
-                position: relative;
-                z-index: 2;
-            }
-
-            .textarea:focus + .textarea-lines {
-                opacity: 0.3;
-            }
-
-            .char-counter {
-                text-align: right;
-                font-size: 12px;
-                color: #6c757d;
-                margin-top: 5px;
-            }
-
-            .prescription-section,
-            .follow-up-section {
-                background: #f8f9fa;
-                padding: 15px;
-                margin-bottom: 20px;
-                border-radius: 8px;
-                border: 1px solid #dee2e6;
-            }
-
-            .prescription-section h4,
-            .follow-up-section h4 {
-                margin-bottom: 10px;
-                color: #495057;
-            }
-
-            .prescription-section textarea {
-                width: 100%;
-                border: 2px solid #ced4da;
-                padding: 8px 12px;
-                border-radius: 4px;
-                font-size: 14px;
-                resize: vertical;
-            }
-
-            .follow-up-options label {
-                display: flex;
-                align-items: center;
-                margin-bottom: 15px;
-                cursor: pointer;
-            }
-
-            .follow-up-options input[type="checkbox"] {
-                margin-right: 10px;
-                transform: scale(1.2);
-            }
-
-            .follow-up-details {
-                padding-left: 30px;
-            }
-
-            .follow-up-details label {
-                display: block;
-                margin: 10px 0 5px 0;
-                font-weight: bold;
-            }
-
-            .follow-up-details input,
-            .follow-up-details textarea {
-                width: 100%;
-                border: 2px solid #ced4da;
-                padding: 8px 12px;
-                border-radius: 4px;
-                font-size: 14px;
-            }
-
-            .actions-section {
-                margin-top: 30px;
-            }
-
-            /* Modal */
-            .modal {
-                display: none;
-                position: fixed;
-                z-index: 1000;
-                left: 0;
-                top: 0;
-                width: 100%;
-                height: 100%;
-                background-color: rgba(0,0,0,0.5);
-                animation: fadeIn 0.3s ease;
-            }
-
-            .modal-content {
-                background-color: #fefefe;
-                margin: 15% auto;
-                padding: 0;
-                border: 1px solid #888;
-                width: 90%;
-                max-width: 500px;
-                border-radius: 8px;
-                animation: slideDown 0.3s ease;
-            }
-
-            .modal-header {
-                padding: 20px;
-                background: #f8f9fa;
-                border-bottom: 1px solid #dee2e6;
-                border-radius: 8px 8px 0 0;
-            }
-
-            .modal-header h3 {
-                margin: 0;
-                color: #495057;
-            }
-
-            .modal-body {
-                padding: 20px;
-            }
-
-            .modal-footer {
-                padding: 20px;
-                background: #f8f9fa;
-                border-top: 1px solid #dee2e6;
-                text-align: right;
-                border-radius: 0 0 8px 8px;
-            }
-
-            .navigation-links {
-                text-align: center;
-                margin-top: 30px;
-            }
-
-            .navigation-links .btn {
-                margin: 0 10px;
-                text-decoration: none;
-                display: inline-block;
-            }
-
-            @keyframes slideDown {
-                from {
-                    opacity: 0;
-                    transform: translateY(-50px);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateY(0);
-                }
-            }
-
-            @keyframes fadeIn {
-                from { opacity: 0; }
-                to { opacity: 1; }
-            }
-
-            @keyframes slideInRight {
-                from {
-                    opacity: 0;
-                    transform: translateX(100%);
-                }
-                to {
-                    opacity: 1;
-                    transform: translateX(0);
-                }
-            }
-
-            @keyframes slideOutRight {
-                from {
-                    opacity: 1;
-                    transform: translateX(0);
-                }
-                to {
-                    opacity: 0;
-                    transform: translateX(100%);
-                }
-            }
-
-            @media (max-width: 768px) {
-                .header {
-                    flex-direction: column;
-                    gap: 10px;
-                }
-
-                .info-row {
-                    flex-direction: column;
-                    gap: 5px;
-                }
-
-                .section-header {
-                    flex-direction: column;
-                    align-items: flex-start;
-                    gap: 10px;
-                }
-
-                .tools {
-                    width: 100%;
-                    justify-content: flex-start;
-                }
-
-                .button-row {
-                    flex-direction: column;
-                    gap: 10px;
-                }
-
-                .button-row .btn {
-                    margin: 0;
-                }
-
-                .modal-content {
-                    width: 95%;
-                    margin: 10% auto;
-                }
-            }
-        `;
-        document.head.appendChild(additionalStyles);
+        // Inicializar auto-guardado
+        document.addEventListener('DOMContentLoaded', iniciarAutoGuardado);
+        window.addEventListener('beforeunload', detenerAutoGuardado);
     </script>
 </body>
 </html>
