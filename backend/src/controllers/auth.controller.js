@@ -1,25 +1,19 @@
-import jwt from "jsonwebtoken";
-import bcrypt from "bcryptjs";
-import { Usuario } from "../models/usuario.model.js";
+import pool from "../config/db.js";
 
-export const login = async (req, res) => {
-  try {
-    const { email, password } = req.body;
+export const login = (req, res) => {
+  const { email, password } = req.body;
 
-    const user = await Usuario.findByEmail(email);
-    if (!user) return res.status(404).json({ message: "Usuario no encontrado" });
+  const query = "SELECT * FROM usuarios WHERE email = ? AND password = ?";
+  pool.query(query, [email, password], (err, results) => {
+    if (err) {
+      console.error("❌ Error en la consulta:", err.message);
+      return res.status(500).json({ error: "Error en el servidor" });
+    }
 
-    const validPass = await bcrypt.compare(password, user.password);
-    if (!validPass) return res.status(401).json({ message: "Contraseña incorrecta" });
-
-    const token = jwt.sign(
-      { id: user.id, rol: user.rol },
-      process.env.JWT_SECRET,
-      { expiresIn: "1h" }
-    );
-
-    res.json({ token, rol: user.rol });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
+    if (results.length > 0) {
+      res.json({ message: "✅ Login exitoso", user: results[0] });
+    } else {
+      res.status(401).json({ message: "❌ Credenciales incorrectas" });
+    }
+  });
 };
