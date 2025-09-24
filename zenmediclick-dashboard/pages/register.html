@@ -106,3 +106,41 @@
     </div>
 </body>
 </html>
+
+<script>
+document.querySelector("form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const firstName = document.getElementById("firstName").value;
+    const lastName = document.getElementById("lastName").value;
+    const email = document.getElementById("email").value;
+    const phone = document.getElementById("phone").value;
+    const password = document.getElementById("password").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+
+    if (password !== confirmPassword) {
+        alert("❌ Las contraseñas no coinciden");
+        return;
+    }
+
+    try {
+        const res = await fetch("http://127.0.0.1:8000/api/auth/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ firstName, lastName, email, phone, password })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+            alert("⚠️ " + data.error);
+        } else {
+            alert("✅ Usuario creado con éxito");
+            window.location.href = "login.html"; // redirigir al login
+        }
+    } catch (err) {
+        console.error("Error:", err);
+        alert("Error de conexión con el servidor");
+    }
+});
+</script>
