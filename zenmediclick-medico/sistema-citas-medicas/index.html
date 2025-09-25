@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ZenMediClick - Dashboard Médico</title>
+    <script src="js/medico-system.js"></script>
     <style>
         * {
             margin: 0;
@@ -241,31 +242,41 @@
             </div>
         </div>
 
-        <div class="dashboard-grid">
-            <a href="agenda.html" class="dashboard-card">
-                <div class="card-icon calendar-icon"></div>
-                <h3 class="card-title">Agendar Cita</h3>
-                <p class="card-description">Programa una nueva cita médica</p>
-            </a>
+   <main>
+    <div class="card">
+        <a href="pages/agenda.html">
+            <div class="card-icon calendar-icon"></div>
+            <h3 class="card-title">Agendar Cita</h3>
+            <p class="card-description">Programa una nueva cita médica</p>
+        </a>
+    </div>
 
-            <a href="detalles.html" class="dashboard-card">
-                <div class="card-icon history-icon"></div>
-                <h3 class="card-title">Historial de Citas</h3>
-                <p class="card-description">Ver todas tus citas anteriores</p>
-            </a>
+    <div class="card">
+        <a href="pages/detalles.html">
+            <div class="card-icon history-icon"></div>
+            <h3 class="card-title">Historial de Citas</h3>
+            <p class="card-description">Ver todas tus citas anteriores</p>
+        </a>
+    </div>
 
-            <a href="#" class="dashboard-card" onclick="showCancelModal()">
-                <div class="card-icon cancel-icon"></div>
-                <h3 class="card-title">Cancelar Cita</h3>
-                <p class="card-description">Cancelar citas programadas</p>
-            </a>
+    <div class="card">
+        <a href="#" onclick="showCancelModal()">
+            <div class="card-icon cancel-icon"></div>
+            <h3 class="card-title">Cancelar Cita</h3>
+            <p class="card-description">Cancelar citas programadas</p>
+        </a>
+    </div>
 
-            <a href="observaciones.html" class="dashboard-card">
-                <div class="card-icon reminder-icon"></div>
-                <h3 class="card-title">Observaciones</h3>
-                <p class="card-description">Configurar notificaciones</p>
-            </a>
-        </div>
+    <div class="card">
+        <a href="pages/observaciones.html">
+            <div class="card-icon reminder-icon"></div>
+            <h3 class="card-title">Observaciones</h3>
+            <p class="card-description">Configurar notificaciones</p>
+        </a>
+    </div>
+</main>
+
+
     </main>
 
     <script>

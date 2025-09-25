@@ -3,7 +3,7 @@ import mysql from "mysql2";
 const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
-  password: "tu_password",
+  password: "127.0.01",
   database: "zenmediclick"
 });
 

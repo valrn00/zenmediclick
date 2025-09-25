@@ -1,16 +1,42 @@
-import db from "../config/db.js";
+import { DataTypes } from 'sequelize';
+import sequelize from '../config/db.js';
 
-export const Usuario = {
-  async findByEmail(email) {
-    const [rows] = await db.query("SELECT * FROM usuarios WHERE email = ?", [email]);
-    return rows[0];
+
+
+const Usuario = sequelize.define('Usuario', {
+  id: {
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
+    primaryKey: true
   },
-
-  async create(nombre, email, password, rol, id_ips) {
-    const [result] = await db.query(
-      "INSERT INTO usuarios (nombre, email, password, rol, id_ips) VALUES (?,?,?,?,?)",
-      [nombre, email, password, rol, id_ips]
-    );
-    return result.insertId;
+  nombre: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  apellido: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  email: {
+    type: DataTypes.STRING,
+    allowNull: true,
+    unique: true
+  },
+  telefono: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  password: {
+    type: DataTypes.STRING,
+    allowNull: true
+  },
+  tipo: {
+    type: DataTypes.ENUM('paciente','medico','admin'),
+    defaultValue: 'paciente'
   }
-};
+}, {
+  tableName: 'usuarios',
+  timestamps: false
+});
+
+export default Usuario;
