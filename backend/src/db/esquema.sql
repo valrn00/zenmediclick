@@ -11,15 +11,15 @@ CREATE TABLE ips (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE usuarios (
-  id INT(11) NOT NULL AUTO_INCREMENT,
-  nombre VARCHAR(50) NOT NULL,
-  email VARCHAR(100) DEFAULT NULL,
-  password VARCHAR(255) NOT NULL,
-  rol ENUM('Paciente','Medico','Administrador') NOT NULL,
-  id_ips INT(11) DEFAULT NULL,
-  PRIMARY KEY (id), 
-  FOREIGN KEY (id_ips) REFERENCES ips(id) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre VARCHAR(100),
+    apellido VARCHAR(100),
+    email VARCHAR(100) UNIQUE,
+    telefono VARCHAR(20),
+    password VARCHAR(255),
+    tipo ENUM('paciente','medico','admin') DEFAULT 'paciente'
+);
+
 
 CREATE TABLE pacientes (
   id_usuario INT(11) NOT NULL,

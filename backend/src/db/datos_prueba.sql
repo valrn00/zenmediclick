@@ -7,17 +7,17 @@ INSERT INTO ips (nombre, direccion, telefono, email) VALUES
 ('IPS del Norte', 'Calle 50 #10-20', '6014445555', 'info@ipsnorte.com'),
 ('Centro de Salud Sur', 'Carrera 3 #2-10', '6016667777', 'contacto@saludsur.com');
 
-INSERT INTO usuarios (nombre, cedula, email, password, rol, id_ips) VALUES
-('Ana García', '1001001001', 'ana.garcia@email.com', 'hashedpass_ana', 'Paciente', NULL),
-('Carlos López', '2002002002', 'carlos.lopez@email.com', 'hashedpass_carlos', 'Paciente', 1),
-('Dr. Juan Pérez', '3003003003', 'juan.perez@medico.com', 'hashedpass_juan', 'Medico', 2),
-('Sofía Rodríguez', '5005005005', 'sofia.rodriguez@email.com', 'hashedpass_sofia', 'Paciente', NULL),
-('Dra. Elena Gómez', '6006006006', 'elena.gomez@medico.com', 'hashedpass_elena', 'Medico', 3),
-('Dr. Andrés Castro', '7007007007', 'andres.castro@medico.com', 'hashedpass_andres', 'Medico', 4),
-('Dra. Isabel Vargas', '8008008008', 'isabel.vargas@medico.com', 'hashedpass_isabel', 'Medico', 5),
-('Javier Quintero', '9009009009', 'javier.q@email.com', 'hashedpass_javier', 'Paciente', 2),
-('Dr. Ricardo Soto', '1010101010', 'ricardo.soto@medico.com', 'hashedpass_ricardo', 'Medico', 1),
-('Mónica Guzmán', '1111111111', 'monica.g@email.com', 'hashedpass_monica', 'Paciente', NULL);
+INSERT INTO usuarios (nombre, email, password, rol, id_ips) VALUES
+('Ana García', 'ana.garcia@email.com', 'hashedpass_ana', 'Paciente', NULL),
+('Carlos López','carlos.lopez@email.com', 'hashedpass_carlos', 'Paciente', 1),
+('Dr. Juan Pérez','juan.perez@medico.com', 'hashedpass_juan', 'Medico', 2),
+('Sofía Rodríguez', 'sofia.rodriguez@email.com', 'hashedpass_sofia', 'Paciente', NULL),
+('Dra. Elena Gómez', 'elena.gomez@medico.com', 'hashedpass_elena', 'Medico', 3),
+('Dr. Andrés Castro', 'andres.castro@medico.com', 'hashedpass_andres', 'Medico', 4),
+('Dra. Isabel Vargas', 'isabel.vargas@medico.com', 'hashedpass_isabel', 'Medico', 5),
+('Javier Quintero', 'javier.q@email.com', 'hashedpass_javier', 'Paciente', 2),
+('Dr. Ricardo Soto', 'ricardo.soto@medico.com', 'hashedpass_ricardo', 'Medico', 1),
+('Mónica Guzmán', 'monica.g@email.com', 'hashedpass_monica', 'Paciente', NULL);
 
 INSERT INTO pacientes (id_usuario, id_ips) VALUES
 (1, NULL),
