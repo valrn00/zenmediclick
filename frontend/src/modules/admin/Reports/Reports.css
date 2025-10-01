@@ -1,0 +1,43 @@
+/* frontend/src/modules/admin/components/Reports/Reports.css */
+
+.reports-section {
+  margin-top: 20px;
+}
+
+.report-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+}
+
+.report-item:hover {
+  background: #f8f9fa;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.report-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.report-title {
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.report-description {
+  color: #666;
+  font-size: 14px;
+}
+
+.report-actions {
+  display: flex;
+  gap: 10px;
+}

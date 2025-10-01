@@ -1,0 +1,41 @@
+.schedule-grid {
+  display: grid;
+  grid-template-columns: auto 1fr 1fr;
+  gap: 15px;
+  align-items: center;
+  margin-bottom: 15px;
+  padding: 15px;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #dee2e6;
+}
+
+.schedule-day {
+  font-weight: 600;
+  color: #495057;
+  min-width: 100px;
+}
+
+.schedule-input {
+  padding: 8px 12px;
+  border: 1px solid #ced4da;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.schedule-input:focus {
+  outline: none;
+  border-color: #4facfe;
+  box-shadow: 0 0 0 0.2rem rgba(79, 172, 254, 0.25);
+}
+
+.availability-section {
+  margin-top: 20px;
+}
+
+@media (max-width: 768px) {
+  .schedule-grid {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+}

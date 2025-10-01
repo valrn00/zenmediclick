@@ -1,0 +1,73 @@
+/* Estilos para UserManagement */
+.users-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin-top: 20px;
+}
+
+.users-table th,
+.users-table td {
+	padding: 12px;
+	text-align: left;
+	border-bottom: 1px solid #dee2e6;
+}
+
+.users-table th {
+	background: #f8f9fa;
+	font-weight: 600;
+	color: #495057;
+	position: sticky;
+	top: 0;
+}
+
+.users-table tbody tr:hover {
+	background: #f8f9fa;
+}
+
+.status-badge {
+	padding: 4px 12px;
+	border-radius: 20px;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+.status-active {
+	background: #d4edda;
+	color: #155724;
+}
+
+.status-inactive {
+	background: #f8d7da;
+	color: #721c24;
+}
+
+/* Botones simples */
+.btn { padding: 8px 12px; border-radius: 6px; border: none; cursor: pointer; }
+.btn-primary { background: #1976d2; color: white; }
+.btn-warning { background: #f57c00; color: white; }
+.btn-danger { background: #d32f2f; color: white; }
+.btn-secondary { background: #9e9e9e; color: white; }
+.btn-small { padding: 6px 8px; font-size: 13px; }
+
+/* Modal simple */
+.modal {
+	position: fixed;
+	inset: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	background: rgba(0,0,0,0.4);
+}
+.modal .modal-content {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	width: 640px;
+	max-width: 95%;
+}
+.modal .modal-header { display:flex; justify-content:space-between; align-items:center; }
+.modal .close-btn { background: transparent; border: none; font-size: 22px; cursor: pointer; }
+.form-group { margin-bottom: 12px; }
+.form-row { display:flex; gap:12px; }
+.form-row .form-group { flex: 1; }
+.form-group input, .form-group select { width:100%; padding:8px; border:1px solid #ddd; border-radius:4px; }
