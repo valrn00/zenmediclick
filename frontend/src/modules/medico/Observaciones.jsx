@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useState, useEffect, useMemo } from 'react';
 
 const Observaciones = () => {
   const [observaciones, setObservaciones] = useState([
@@ -71,9 +70,6 @@ const Observaciones = () => {
   const [activeFilter, setActiveFilter] = useState('');
 
   useEffect(() => {
-    cargarObservaciones();
-    actualizarEstadisticas();
-
     const autoSaveInterval = setInterval(() => {
       console.log('Auto-guardado realizado...');
     }, 30000);
@@ -101,51 +97,7 @@ const Observaciones = () => {
     }
   }, [showForm, editandoObservacion]);
 
-  const cargarObservaciones = () => {
-    const container = document.getElementById('observationsList');
-    if (observacionesFiltradas.length === 0) {
-      container.innerHTML = `
-        <div class="text-center p-16 text-gray-600">
-          <div class="text-6xl mb-5 opacity-50">📝</div>
-          <p>No se encontraron observaciones</p>
-        </div>
-      `;
-      return;
-    }
-    container.innerHTML = '';
-    observacionesFiltradas.forEach(obs => {
-      const obsCard = document.createElement('div');
-      obsCard.className = 'observation-card bg-gradient-to-br from-[#f8f9ff] to-white border border-gray-200 rounded-xl p-6 mb-5 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:border-[#667eea]';
-      obsCard.innerHTML = `
-        <div class="flex justify-between items-start mb-4">
-          <div>
-            <div class="text-lg font-semibold text-gray-800">${obs.paciente}</div>
-            <div class="text-sm text-gray-600 flex items-center gap-1">
-              📅 ${formatearFecha(obs.fecha)} - ${obs.hora}
-            </div>
-          </div>
-          <div class="px-3 py-1 rounded-full text-xs font-semibold uppercase ${obs.tipo === 'seguimiento' ? 'bg-blue-100 text-blue-800' : obs.tipo === 'primera-vez' ? 'bg-green-100 text-green-800' : obs.tipo === 'urgente' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}">
-            ${obs.tipo.replace('-', ' ')}
-          </div>
-        </div>
-        <div class="bg-gray-100 p-4 rounded-lg border-l-4 border-[#667eea] mb-4">
-          ${obs.observacion}
-        </div>
-        <div class="flex gap-2.5">
-          <button class="action-btn bg-blue-500 text-white px-3 py-1.5 rounded-md hover:-translate-y-0.5 hover:shadow-md transition-all" onclick="editarObservacion(${obs.id})">
-            ✏️ Editar
-          </button>
-          <button class="action-btn bg-gray-500 text-white px-3 py-1.5 rounded-md hover:-translate-y-0.5 hover:shadow-md transition-all" onclick="imprimirObservacion(${obs.id})">
-            🖨️ Imprimir
-          </button>
-          <button class="action-btn bg-red-500 text-white px-3 py-1.5 rounded-md hover:-translate-y-0.5 hover:shadow-md transition-all" onclick="eliminarObservacion(${obs.id})">
-            🗑️ Eliminar
-          </button>
-        </div>
-      `;
-      container.appendChild(obsCard);
-    });
-  };
+  // Observaciones se renderizan ahora usando JSX en el return del componente.
 
   const formatearFecha = (fecha) => {
     const fechaObj = new Date(fecha + 'T00:00:00');
@@ -167,14 +119,11 @@ const Observaciones = () => {
 
   const filtrarPorTipo = (tipo) => {
     setActiveFilter(tipo);
-    setObservacionesFiltradas(tipo === '' ? [...observaciones] : observaciones.filter(obs => obs.tipo === tipo));
+    // filtrado reactivo manejado por useEffect que depende de activeFilter
   };
 
   const buscarObservaciones = () => {
-    setObservacionesFiltradas(observaciones.filter(obs =>
-      obs.paciente.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      obs.observacion.toLowerCase().includes(searchTerm.toLowerCase())
-    ));
+    // filtrado reactivo manejado por useEffect que depende de searchTerm
   };
 
   const editarObservacion = (id) => {
@@ -187,8 +136,7 @@ const Observaciones = () => {
 
   const eliminarObservacion = (id) => {
     if (window.confirm('¿Está seguro que desea eliminar esta observación?')) {
-      setObservaciones(observaciones.filter(obs => obs.id !== id));
-      setObservacionesFiltradas(observacionesFiltradas.filter(obs => obs.id !== id));
+      setObservaciones(prev => prev.filter(obs => obs.id !== id));
       alert('Observación eliminada exitosamente');
     }
   };
@@ -201,17 +149,19 @@ const Observaciones = () => {
     }
   };
 
-  const actualizarEstadisticas = () => {
-    const total = observaciones.length;
-    const hoy = new Date().toISOString().split('T')[0];
-    const obsHoy = observaciones.filter(obs => obs.fecha === hoy).length;
-    const urgentes = observaciones.filter(obs => obs.tipo === 'urgente').length;
-    const seguimiento = observaciones.filter(obs => obs.tipo === 'seguimiento').length;
-    document.getElementById('totalObservations').textContent = total;
-    document.getElementById('todayObservations').textContent = obsHoy;
-    document.getElementById('urgentObservations').textContent = urgentes;
-    document.getElementById('followUpObservations').textContent = seguimiento;
-  };
+  // estadísticas calculadas con useMemo (no se necesita función separada)
+
+  // Recalcula las observaciones filtradas cuando cambian los datos, el término de búsqueda o el filtro activo
+  useEffect(() => {
+    const term = searchTerm.trim().toLowerCase();
+    let filtered = [...observaciones];
+    if (activeFilter) filtered = filtered.filter(o => o.tipo === activeFilter);
+    if (term) filtered = filtered.filter(o =>
+      o.paciente.toLowerCase().includes(term) ||
+      o.observacion.toLowerCase().includes(term)
+    );
+    setObservacionesFiltradas(filtered);
+  }, [observaciones, searchTerm, activeFilter]);
 
   const exportarObservaciones = () => {
     alert('Generando reporte de observaciones...');
@@ -244,14 +194,14 @@ Configuración de Notificaciones:
       estado: 'activa'
     };
     if (editandoObservacion) {
-      setObservaciones(observaciones.map(obs => obs.id === editandoObservacion.id ? { ...nuevaObservacion, id: editandoObservacion.id } : obs));
+      setObservaciones(prev => prev.map(obs => obs.id === editandoObservacion.id ? { ...nuevaObservacion, id: editandoObservacion.id } : obs));
       alert('Observación actualizada exitosamente');
     } else {
       nuevaObservacion.id = Date.now();
-      setObservaciones([nuevaObservacion, ...observaciones]);
+      setObservaciones(prev => [nuevaObservacion, ...prev]);
       alert('Observación guardada exitosamente');
     }
-    setObservacionesFiltradas([...observaciones]);
+    // observacionesFiltradas será recalculado por el efecto
     setShowForm(false);
     setEditandoObservacion(null);
   };
@@ -291,20 +241,21 @@ Configuración de Notificaciones:
         <h1 className="text-4xl font-light text-center mb-8 text-shadow-md">Observaciones Médicas</h1>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          {/* Estadísticas calculadas de forma declarativa */}
           <div className="bg-white/95 text-gray-800 p-5 rounded-xl shadow-md text-center">
-            <div className="stat-number text-3xl font-bold text-[#667eea] mb-1" id="totalObservations">12</div>
+            <div className="stat-number text-3xl font-bold text-[#667eea] mb-1">{useMemo(() => observaciones.length, [observaciones])}</div>
             <div className="stat-label text-xs text-gray-600 uppercase">Total</div>
           </div>
           <div className="bg-white/95 text-gray-800 p-5 rounded-xl shadow-md text-center">
-            <div className="stat-number text-3xl font-bold text-[#667eea] mb-1" id="todayObservations">3</div>
+            <div className="stat-number text-3xl font-bold text-[#667eea] mb-1">{useMemo(() => observaciones.filter(o => o.fecha === new Date().toISOString().split('T')[0]).length, [observaciones])}</div>
             <div className="stat-label text-xs text-gray-600 uppercase">Hoy</div>
           </div>
           <div className="bg-white/95 text-gray-800 p-5 rounded-xl shadow-md text-center">
-            <div className="stat-number text-3xl font-bold text-[#667eea] mb-1" id="urgentObservations">1</div>
+            <div className="stat-number text-3xl font-bold text-[#667eea] mb-1">{useMemo(() => observaciones.filter(o => o.tipo === 'urgente').length, [observaciones])}</div>
             <div className="stat-label text-xs text-gray-600 uppercase">Urgentes</div>
           </div>
           <div className="bg-white/95 text-gray-800 p-5 rounded-xl shadow-md text-center">
-            <div className="stat-number text-3xl font-bold text-[#667eea] mb-1" id="followUpObservations">8</div>
+            <div className="stat-number text-3xl font-bold text-[#667eea] mb-1">{useMemo(() => observaciones.filter(o => o.tipo === 'seguimiento').length, [observaciones])}</div>
             <div className="stat-label text-xs text-gray-600 uppercase">Seguimiento</div>
           </div>
         </div>
@@ -344,7 +295,34 @@ Configuración de Notificaciones:
                 Control
               </button>
             </div>
-            <div id="observationsList"></div>
+            <div>
+              {observacionesFiltradas.length === 0 ? (
+                <div className="text-center p-16 text-gray-600">
+                  <div className="text-6xl mb-5 opacity-50">📝</div>
+                  <p>No se encontraron observaciones</p>
+                </div>
+              ) : (
+                observacionesFiltradas.map(obs => (
+                  <div key={obs.id} className="observation-card bg-gradient-to-br from-[#f8f9ff] to-white border border-gray-200 rounded-xl p-6 mb-5 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:border-[#667eea]">
+                    <div className="flex justify-between items-start mb-4">
+                      <div>
+                        <div className="text-lg font-semibold text-gray-800">{obs.paciente}</div>
+                        <div className="text-sm text-gray-600 flex items-center gap-1">📅 {formatearFecha(obs.fecha)} - {obs.hora}</div>
+                      </div>
+                      <div className={`px-3 py-1 rounded-full text-xs font-semibold uppercase ${obs.tipo === 'seguimiento' ? 'bg-blue-100 text-blue-800' : obs.tipo === 'primera-vez' ? 'bg-green-100 text-green-800' : obs.tipo === 'urgente' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800'}`}>
+                        {obs.tipo.replace('-', ' ')}
+                      </div>
+                    </div>
+                    <div className="bg-gray-100 p-4 rounded-lg border-l-4 border-[#667eea] mb-4">{obs.observacion}</div>
+                    <div className="flex gap-2.5">
+                      <button className="action-btn bg-blue-500 text-white px-3 py-1.5 rounded-md hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => editarObservacion(obs.id)}>✏️ Editar</button>
+                      <button className="action-btn bg-gray-500 text-white px-3 py-1.5 rounded-md hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => imprimirObservacion(obs.id)}>🖨️ Imprimir</button>
+                      <button className="action-btn bg-red-500 text-white px-3 py-1.5 rounded-md hover:-translate-y-0.5 hover:shadow-md transition-all" onClick={() => eliminarObservacion(obs.id)}>🗑️ Eliminar</button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
           </div>
           {showForm ? (
             <div className="bg-white/95 text-gray-800 p-8 rounded-xl shadow-md sticky top-5">
@@ -434,4 +412,4 @@ Configuración de Notificaciones:
   );
 };
 
-ReactDOM.render(<Observaciones />, document.getElementById('root'));
+export default Observaciones;
